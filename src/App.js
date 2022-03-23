@@ -1,36 +1,60 @@
 function App() {
   return (
-    <div className="App">
-      <header className="text-3xl font-bold underline text-center">
+    <div className="">
+      {/* <header className="text-3xl font-bold underline text-center">
           Real Time Chat
-      </header>
-      <div class="grid grid-cols-2 border">
-        <div class="grid grid-rows-2">
-          <div class="row-span-2">
-            lorem1: Lorem Ipsum Dolor Sit Amet<br/>
-            lorem2: Dolor Sit Amet Lorem Ipsum<br/>
-            lorem1: Lorem Ipsum Dolor Sit Amet<br/>
-            lorem2: Dolor Sit Amet Lorem Ipsum<br/>
-            lorem1: Lorem Ipsum Dolor Sit Amet<br/>
-            lorem2: Dolor Sit Amet Lorem Ipsum<br/>
-            lorem1: Lorem Ipsum Dolor Sit Amet<br/>
-            lorem2: Dolor Sit Amet Lorem Ipsum<br/>
-            lorem1: Lorem Ipsum Dolor Sit Amet<br/>
-            lorem2: Dolor Sit Amet Lorem Ipsum<br/>
-            lorem1: Lorem Ipsum Dolor Sit Amet<br/>
-            lorem2: Dolor Sit Amet Lorem Ipsum<br/>
+      </header> */}
+      <div class="flex h-screen border">
+        <div class="flex flex-col w-full h-full p-8">
+          <div class="flex-grow">
+            <div>
+              lorem1: Lorem Ipsum Dolor Sit Amet
+            </div>
+            <div>
+              lorem2: Dolor Sit Amet Lorem Ipsum
+            </div>
+            <div>
+              lorem1: Lorem Ipsum Dolor Sit Amet
+            </div>
+            <div>
+              lorem2: Dolor Sit Amet Lorem Ipsum
+            </div>
+            <div>
+              lorem1: Lorem Ipsum Dolor Sit Amet
+            </div>
+            <div>
+              lorem2: Dolor Sit Amet Lorem Ipsum
+            </div>
+            <div>
+              lorem1: Lorem Ipsum Dolor Sit Amet
+            </div>
+            <div>
+              lorem2: Dolor Sit Amet Lorem Ipsum
+            </div>
+            <div>
+              lorem1: Lorem Ipsum Dolor Sit Amet
+            </div>
+            <div>
+              lorem2: Dolor Sit Amet Lorem Ipsum
+            </div>
           </div>
-          <div class="grid grid-cols-3">
-            <input type="textarea" class="form-textarea col-span-2"/> 
-            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded">
-              Button
+          <div class="flex w-full">
+            <input type="textarea" class="form-textarea flex-grow mr-4"/> 
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded flex-initial w-24">
+              Send
             </button>
           </div>
         </div>
-        <div class="grid grid-rows-2 gap-4">
-          <video class="h-fit aspect-video" autoplay playsinline poster="https://thetechnoskeptic.com/wp-content/uploads/2018/05/BlackBoxComposite_iStock_leolintangivanmollov_900.jpg"></video>
-          <video class="h-full aspect-video" autoplay playsinline poster="https://thetechnoskeptic.com/wp-content/uploads/2018/05/BlackBoxComposite_iStock_leolintangivanmollov_900.jpg"></video>
+
+        <div class="flex flex-col w-full">
+          <div class="flex align-center justify-center aspect-video">
+            <video class="h-12 sm:h-52 lg:h-96" autoplay playsinline poster="https://thetechnoskeptic.com/wp-content/uploads/2018/05/BlackBoxComposite_iStock_leolintangivanmollov_900.jpg"></video>
+          </div>
+          <div class="flex justify-center aspect-video">
+            <video class="h-12 sm:h-52 lg:h-96"autoplay playsinline poster="https://thetechnoskeptic.com/wp-content/uploads/2018/05/BlackBoxComposite_iStock_leolintangivanmollov_900.jpg"></video>
+          </div>
         </div>
+        
       </div>
     </div>
   );
