@@ -1,6 +1,5 @@
 export default function Chat() {
     return (
-
         <div className="">
           {/* <header className="text-3xl font-bold underline text-center">
               Real Time Chat

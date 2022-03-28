@@ -17,9 +17,9 @@ function App() {
       <Suspense fallback={<div />}>
         <Router>
           <Routes>
-            <Route index path={"/chat"} element={<Chat> </Chat>}></Route>
-            <Route index path={"/room"} element={<Room> </Room>}></Route>
-            <Route index path={"/login"} element={<Login> </Login>}></Route>
+            <Route path={"/chat"} element={<Chat> </Chat>}></Route>
+            <Route path={"/room"} element={<Room> </Room>}></Route>
+            <Route index path={"/"} element={<Login> </Login>}></Route>
           </Routes>
         </Router>
       </Suspense>
