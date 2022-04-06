@@ -241,19 +241,19 @@ class App extends Component {
   }
 
   // sending sockets
-  // send = () => {
-  //   const socket = socketIOClient(this.state.endpoint);
-  //   socket.emit('change color', this.state.color) // change 'red' to this.state.color
-  // }
+  send = () => {
+    const socket = socketIOClient(this.state.endpoint);
+    socket.emit('change color', this.state.color) // change 'red' to this.state.color
+  }
 
-  ///
+  
   
   // adding the function
-  // setColor = (color) => {
-  //   this.setState({ color })
-  // }
+  setColor = (color) => {
+    this.setState({ color })
+  }
   
-  ///
+  
 
   render() {
     // testing for socket connections
