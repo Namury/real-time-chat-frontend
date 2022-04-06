@@ -2,6 +2,7 @@ import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import React, { Suspense, Component } from "react";
 import socketIOClient from "socket.io-client";
+import adapter from 'webrtc-adapter';
 
 const Chat = React.lazy(() => import("./pages/chat"));
 const Login = React.lazy(() => import("./pages/login"));
