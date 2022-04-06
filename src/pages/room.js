@@ -78,14 +78,27 @@ export default function Room() {
               <div class="py-5 bg-yellow">
                 <p class="text-xl font-semibold text-black">Config</p>
                 <form>
-                  <input
-                    type={"text"}
-                    class="px-3 text-sm py-1 mt-5 border-blue-400 w-full border rounded-lg placeholder:text-sm"
-                    placeholder="Username"
-                  ></input>
+                <div>
+                  Camera
+                </div>
+                <select name="camera" id="camera" class="flex-grow">
+                  <option>Camera 1</option>
+                  <option>Camera 2</option>
+                  <option>Camera 3</option>
+                  <option>Camera 4</option>
+                </select>
+                <div>
+                  Microphone
+                </div>
+                <select name="mic" id="mic" class="flex-grow">
+                  <option>Mic 1</option>
+                  <option>Mic 2</option>
+                  <option>Mic 3</option>
+                  <option>Mic 4</option>
+                </select>
                   <div class="flex justify-center items-center mt-2">
                     <button class="h-8 w-[150px] bg-blue-500 text-sm text-white rounded-lg hover:bg-blue-600">
-                      Submit
+                      Change
                     </button>
                   </div>
                 </form>

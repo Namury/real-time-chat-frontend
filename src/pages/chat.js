@@ -19,7 +19,7 @@ export default function Chat() {
             <div>lorem2: Dolor Sit Amet Lorem Ipsum</div>
           </div>
           <div class="flex w-full">
-            <input type="textarea" class="form-textarea flex-grow mr-4" />
+            <input type="textarea" class="form-textarea flex-grow mr-4 border-2" />
             <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded flex-initial w-24">
               Send
             </button>
