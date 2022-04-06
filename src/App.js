@@ -14,7 +14,7 @@ var localStream;
 var pc;
 var remoteStream;
 var turnReady;
-var room = prompt('Enter room name:');
+var room = 'awe'
 
 var localStreamConstraints = {
   audio: true,
@@ -231,7 +231,7 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
-      endpoint: "http://localhost:4001",
+      endpoint: "http://localhost:https://namury-rtc-backend.herokuapp.com/",
       
       ///
       color: 'white'
@@ -241,17 +241,17 @@ class App extends Component {
   }
 
   // sending sockets
-  send = () => {
-    const socket = socketIOClient(this.state.endpoint);
-    socket.emit('change color', this.state.color) // change 'red' to this.state.color
-  }
+  // send = () => {
+  //   const socket = socketIOClient(this.state.endpoint);
+  //   socket.emit('change color', this.state.color) // change 'red' to this.state.color
+  // }
 
   ///
   
   // adding the function
-  setColor = (color) => {
-    this.setState({ color })
-  }
+  // setColor = (color) => {
+  //   this.setState({ color })
+  // }
   
   ///
 
