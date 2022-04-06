@@ -94,6 +94,14 @@ export default function Room() {
           </div>
         </div>
       </div>
+      <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"
+        integrity="sha512-MgkNs0gNdrnOM7k+0L+wgiRc5aLgl74sJQKbIWegVIMvVGPc1+gc1L2oK9Wf/D9pq58eqIJAxOonYPVE5UwUFA=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+      ></script>
+      <script src="js\config.js"></script>
+      <script src="js\main.js"></script>
     </div>
   );
 }

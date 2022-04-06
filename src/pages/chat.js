@@ -29,14 +29,17 @@ export default function Chat() {
         <div class="flex flex-col w-full">
           <div class="flex align-center justify-center aspect-video">
             <video
+              id="localVideo"
               class="h-12 sm:h-52 lg:h-96"
               autoplay
+              muted
               playsinline
               poster="https://thetechnoskeptic.com/wp-content/uploads/2018/05/BlackBoxComposite_iStock_leolintangivanmollov_900.jpg"
             ></video>
           </div>
           <div class="flex justify-center aspect-video">
             <video
+              id="remoteVideo"
               class="h-12 sm:h-52 lg:h-96"
               autoplay
               playsinline
