@@ -231,7 +231,7 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
-      endpoint: "http://localhost:https://namury-rtc-backend.herokuapp.com/",
+      endpoint: "https://namury-rtc-backend.herokuapp.com/",
       
       ///
       color: 'white'
