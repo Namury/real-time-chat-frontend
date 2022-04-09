@@ -101,16 +101,27 @@ function sendMessage(message, room) {
 }
 
 
+async function getMedia(constraints) {
+  let stream = null;
+
+  try {
+    stream = await navigator.mediaDevices.getUserMedia(constraints);
+    gotStream(stream)
+  } catch(err) {
+      alert('getUserMedia() error: ' + err.name);
+  }
+}
 
 //Displaying Local Stream and Remote Stream on webpage
 var localVideo = document.querySelector('#localVideo');
 var remoteVideo = document.querySelector('#remoteVideo');
 console.log("Going to find Local media");
-navigator.mediaDevices.getUserMedia(localStreamConstraints)
-.then(gotStream)
-.catch(function(e) {
-  alert('getUserMedia() error: ' + e.name);
-});
+getMedia(localStreamConstraints)
+// navigator.mediaDevices.getUserMedia(localStreamConstraints);
+// .then(gotStream)
+// .catch(function(e) {
+  
+// });
 
 //If found local stream
 function gotStream(stream) {
@@ -233,76 +244,77 @@ function stop() {
   pc = null;
 }
 
-class App extends Component {
-  constructor() {
-    super();
-    this.state = {
-      endpoint: "https://namury-rtc-backend.herokuapp.com/",
+// class App extends Component {
+//   constructor() {
+//     super();
+//     this.state = {
+//       endpoint: "https://namury-rtc-backend.herokuapp.com/",
       
-      ///
-      color: 'white'
-      ///
+//       ///
+//       color: 'white'
+//       ///
       
-    };
-  }
-
-  // sending sockets
-  send = () => {
-    const socket = socketIOClient(this.state.endpoint);
-    socket.emit('change color', this.state.color) // change 'red' to this.state.color
-  }
-
-  
-  
-  // adding the function
-  setColor = (color) => {
-    this.setState({ color })
-  }
-  
-  
-
-  render() {
-    // testing for socket connections
-
-    const socket = socketIOClient(this.state.endpoint);
-    socket.on('change color', (col) => {
-      document.body.style.backgroundColor = col
-    })
-
-    return (
-      <div className="App">
-        <Suspense fallback={<div />}>
-          <Router>
-            <Routes>
-              <Route path={"/chat"} element={<Chat> </Chat>}></Route>
-              <Route path={"/room"} element={<Room> </Room>}></Route>
-              <Route index path={"/"} element={<Login> </Login>}></Route>
-            </Routes>
-          </Router>
-        </Suspense>
-      </div>
-    );
-  }
-}
-export default App;
-
-// function App() {
-
+//     };
+//   }
 //   // sending sockets
+//   send = () => {
+//     const socket = socketIOClient(this.state.endpoint);
+//     socket.emit('change color', this.state.color)
+//   }
+  
+//   stop = () => {
+//     isStarted = false;
+//     pc.close();
+//     pc = null;
+//   }
+  
+//   // adding the function
+//   setColor = (color) => {
+//     this.setState({ color })
+//   }
+  
+  
 
-//   return (
-//     <div className="App">
-//       <Suspense fallback={<div />}>
-//         <Router>
-//           <Routes>
-//             <Route path={"/chat"} element={<Chat> </Chat>}></Route>
-//             <Route path={"/room"} element={<Room> </Room>}></Route>
-//             <Route index path={"/"} element={<Login> </Login>}></Route>
-//           </Routes>
-//         </Router>
-//       </Suspense>
-//     </div>
-//   );
+//   render() {
+//     // testing for socket connections
+
+//     const socket = socketIOClient(this.state.endpoint);
+//     socket.on('change color', (col) => {
+//       document.body.style.backgroundColor = col
+//     })
+
+//     return (
+//       <div className="App">
+//         <Suspense fallback={<div />}>
+//           <Router>
+//             <Routes>
+//               <Route path={"/chat"} element={<Chat> </Chat>}></Route>
+//               <Route path={"/room"} element={<Room> </Room>}></Route>
+//               <Route index path={"/"} element={<Login> </Login>}></Route>
+//             </Routes>
+//           </Router>
+//         </Suspense>
+//       </div>
+//     );
+//   }
 // }
-
 // export default App;
+
+function App() {
+
+  return (
+    <div className="App">
+      <Suspense fallback={<div />}>
+        <Router>
+          <Routes>
+            <Route path={"/chat"} element={<Chat> </Chat>}></Route>
+            <Route path={"/room"} element={<Room> </Room>}></Route>
+            <Route index path={"/"} element={<Login> </Login>}></Route>
+          </Routes>
+        </Router>
+      </Suspense>
+    </div>
+  );
+}
+
+export default App;
