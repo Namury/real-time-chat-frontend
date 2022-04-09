@@ -110,6 +110,8 @@ async function getMedia(constraints) {
     gotStream(stream)
   } catch(err) {
       console.log(err)
+      console.log(document.querySelectorAll('video'))
+      console.log(document.querySelector('#localVideo'))
       alert('getUserMedia() error: ' + err.name);
   }
 }
