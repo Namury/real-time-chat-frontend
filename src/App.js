@@ -107,11 +107,17 @@ async function getMedia(constraints) {
 
   try {
     stream = await navigator.mediaDevices.getUserMedia(constraints);
-    gotStream(stream)
+    console.log('Adding local stream.');
+    localStream = stream;
+    localVideo.srcObject = stream;
+    sendMessage('got user media', room);
+    if (isInitiator) {
+      maybeStart();
+    }
   } catch(err) {
       console.log(err)
       console.log(document.querySelectorAll('video'))
-      console.log(document.querySelector('#localVideo'))
+      console.log(localVideo)
       alert('getUserMedia() error: ' + err.name);
   }
 }
@@ -133,15 +139,15 @@ getMedia(localStreamConstraints)
 // });
 
 //If found local stream
-function gotStream(stream) {
-  console.log('Adding local stream.');
-  localStream = stream;
-  localVideo.srcObject = stream;
-  sendMessage('got user media', room);
-  if (isInitiator) {
-    maybeStart();
-  }
-}
+// function gotStream(stream) {
+//   console.log('Adding local stream.');
+//   localStream = stream;
+//   localVideo.srcObject = stream;
+//   sendMessage('got user media', room);
+//   if (isInitiator) {
+//     maybeStart();
+//   }
+// }
 
 
 
