@@ -100,6 +100,7 @@ function sendMessage(message, room) {
   socket.emit('message', message, room);
 }
 
+console.log('Getting user media with constraints', localStreamConstraints);
 
 async function getMedia(constraints) {
   let stream = null;
@@ -108,14 +109,20 @@ async function getMedia(constraints) {
     stream = await navigator.mediaDevices.getUserMedia(constraints);
     gotStream(stream)
   } catch(err) {
+      console.log(err)
       alert('getUserMedia() error: ' + err.name);
   }
 }
 
 //Displaying Local Stream and Remote Stream on webpage
-var localVideo = document.querySelector('#localVideo');
-var remoteVideo = document.querySelector('#remoteVideo');
+var localVideo
+var remoteVideo
+
 console.log("Going to find Local media");
+window.onload = function(){
+  localVideo = document.querySelector('#localVideo');
+  remoteVideo = document.querySelector('#remoteVideo');
+}
 getMedia(localStreamConstraints)
 // navigator.mediaDevices.getUserMedia(localStreamConstraints);
 // .then(gotStream)
@@ -135,7 +142,6 @@ function gotStream(stream) {
 }
 
 
-console.log('Getting user media with constraints', localStreamConstraints);
 
 //If initiator, create the peer connection
 function maybeStart() {
