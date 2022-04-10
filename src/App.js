@@ -111,6 +111,9 @@ async function getMedia(constraints) {
     localStream = stream;
     localVideo.srcObject = stream;
     sendMessage('got user media', room);
+    localVideo.onloadedmetadata = function(e) {
+      localVideo.play();
+    };
     if (isInitiator) {
       maybeStart();
     }
@@ -130,8 +133,8 @@ console.log("Going to find Local media");
 window.onload = function(){
   localVideo = document.querySelector('#localVideo');
   remoteVideo = document.querySelector('#remoteVideo');
+  getMedia(localStreamConstraints)
 }
-getMedia(localStreamConstraints)
 // navigator.mediaDevices.getUserMedia(localStreamConstraints);
 // .then(gotStream)
 // .catch(function(e) {
