@@ -1,7 +1,7 @@
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import React, { Suspense, Component } from "react";
-import socketIOClient from "socket.io-client";
+import { io } from "socket.io-client";
 import adapter from 'webrtc-adapter';
 
 const Chat = React.lazy(() => import("./pages/chat"));
@@ -28,14 +28,19 @@ var turnConfig = {
 
 var pcConfig = turnConfig;
 
-const io = socketIOClient("https://namury-rtc-backend.herokuapp.com/", {
+// const io = socketIOClient("https://namury-rtc-backend.herokuapp.com/", {
+//   withCredentials: true,
+//   extraHeaders: {
+//     'Access-Control-Allow-Origin' : '*'
+//   }
+// });
+
+var socket = io("https://namury-rtc-backend.herokuapp.com/", {
   withCredentials: true,
   extraHeaders: {
     'Access-Control-Allow-Origin' : '*'
   }
 });
-
-var socket = io.connect();
 
 if (room !== '') {
   socket.emit('create or join', room);
@@ -151,8 +156,6 @@ window.onload = function(){
 //     maybeStart();
 //   }
 // }
-
-
 
 //If initiator, create the peer connection
 function maybeStart() {
@@ -289,8 +292,6 @@ function stop() {
 //   setColor = (color) => {
 //     this.setState({ color })
 //   }
-  
-  
 
 //   render() {
 //     // testing for socket connections
