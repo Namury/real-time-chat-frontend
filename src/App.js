@@ -214,9 +214,10 @@ function onCreateSessionDescriptionError(error) {
 
 
 function handleRemoteStreamAdded(event) {
-  console.log('Remote stream added.');
   remoteStream = event.stream;
   remoteVideo.srcObject = remoteStream;
+  remoteVideo.play()
+  console.log('Remote stream added.');
 }
 
 function handleRemoteStreamRemoved(event) {
