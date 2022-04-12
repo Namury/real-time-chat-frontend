@@ -28,7 +28,7 @@ var turnConfig = {
 
 var pcConfig = turnConfig;
 
-var socket = io("https://namury-rtc-backend.herokuapp.com/", {
+var socket = io("localhost:3010", {
   withCredentials: true,
   extraHeaders: {
     'Access-Control-Allow-Origin' : '*'
@@ -100,38 +100,36 @@ function sendMessage(message, room) {
 
 console.log('Getting user media with constraints', localStreamConstraints);
 
-async function getMedia(constraints) {
-  let stream = null;
-
-  try {
-    stream = await navigator.mediaDevices.getUserMedia(constraints);
-    localStream = stream;
-    localVideo.srcObject = stream;
-    console.log('local stream added.');
-    sendMessage('got user media', room);
-    localVideo.onloadedmetadata = function(e) {
-      localVideo.play();
-    };
-    if (isInitiator) {
-      maybeStart();
-    }
-  } catch(err) {
-      console.log(err)
-      console.log(document.querySelectorAll('video'))
-      console.log(localVideo)
-      alert('getUserMedia() error: ' + err.name);
-  }
-}
-
 //Displaying Local Stream and Remote Stream on webpage
+
 var localVideo
 var remoteVideo
-
-console.log("Going to find Local media");
-window.onload = function(){
+window.onload = function (){
   localVideo = document.querySelector('#localVideo');
   remoteVideo = document.querySelector('#remoteVideo');
-  getMedia(localStreamConstraints)
+}
+
+console.log("Going to find Local media");
+navigator.mediaDevices.getUserMedia(localStreamConstraints)
+.then(gotStream)
+.catch(function(e) {
+  console.log(localVideo)
+  alert('getUserMedia() error: ' + e.name);
+});
+
+//If found local stream
+function gotStream(stream) {
+  console.log('Adding local stream.');
+  localStream = stream;
+  localVideo.srcObject = stream;
+  localVideo.onloadedmetadata = function(e) {
+    localVideo.play();
+  };
+
+  sendMessage('got user media', room);
+  if (isInitiator) {
+    maybeStart();
+  }
 }
 
 //If initiator, create the peer connection
@@ -217,8 +215,6 @@ function onCreateSessionDescriptionError(error) {
 function handleRemoteStreamAdded(event) {
   remoteStream = event.stream;
   remoteVideo.srcObject = remoteStream;
-  remoteVideo.play()
-
   remoteVideo.onloadedmetadata = function(e) {
     remoteVideo.play();
   };
