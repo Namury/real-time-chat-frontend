@@ -15,7 +15,7 @@ var localStream;
 var pc;
 var remoteStream;
 var turnReady;
-var room = 'awe'
+var room = prompt('Enter room name:');
 
 var localStreamConstraints = {
   audio: true,
@@ -27,13 +27,6 @@ var turnConfig = {
 }
 
 var pcConfig = turnConfig;
-
-// const io = socketIOClient("https://namury-rtc-backend.herokuapp.com/", {
-//   withCredentials: true,
-//   extraHeaders: {
-//     'Access-Control-Allow-Origin' : '*'
-//   }
-// });
 
 var socket = io("https://namury-rtc-backend.herokuapp.com/", {
   withCredentials: true,
@@ -140,22 +133,6 @@ window.onload = function(){
   remoteVideo = document.querySelector('#remoteVideo');
   getMedia(localStreamConstraints)
 }
-// navigator.mediaDevices.getUserMedia(localStreamConstraints);
-// .then(gotStream)
-// .catch(function(e) {
-  
-// });
-
-//If found local stream
-// function gotStream(stream) {
-//   console.log('Adding local stream.');
-//   localStream = stream;
-//   localVideo.srcObject = stream;
-//   sendMessage('got user media', room);
-//   if (isInitiator) {
-//     maybeStart();
-//   }
-// }
 
 //If initiator, create the peer connection
 function maybeStart() {
@@ -263,60 +240,6 @@ function stop() {
   pc.close();
   pc = null;
 }
-
-// class App extends Component {
-//   constructor() {
-//     super();
-//     this.state = {
-//       endpoint: "https://namury-rtc-backend.herokuapp.com/",
-      
-//       ///
-//       color: 'white'
-//       ///
-      
-//     };
-//   }
-//   // sending sockets
-//   send = () => {
-//     const socket = socketIOClient(this.state.endpoint);
-//     socket.emit('change color', this.state.color)
-//   }
-  
-//   stop = () => {
-//     isStarted = false;
-//     pc.close();
-//     pc = null;
-//   }
-  
-//   // adding the function
-//   setColor = (color) => {
-//     this.setState({ color })
-//   }
-
-//   render() {
-//     // testing for socket connections
-
-//     const socket = socketIOClient(this.state.endpoint);
-//     socket.on('change color', (col) => {
-//       document.body.style.backgroundColor = col
-//     })
-
-//     return (
-//       <div className="App">
-//         <Suspense fallback={<div />}>
-//           <Router>
-//             <Routes>
-//               <Route path={"/chat"} element={<Chat> </Chat>}></Route>
-//               <Route path={"/room"} element={<Room> </Room>}></Route>
-//               <Route index path={"/"} element={<Login> </Login>}></Route>
-//             </Routes>
-//           </Router>
-//         </Suspense>
-//       </div>
-//     );
-//   }
-// }
-// export default App;
 
 function App() {
 
