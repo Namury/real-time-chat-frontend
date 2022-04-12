@@ -218,6 +218,11 @@ function handleRemoteStreamAdded(event) {
   remoteStream = event.stream;
   remoteVideo.srcObject = remoteStream;
   remoteVideo.play()
+
+  remoteVideo.onloadedmetadata = function(e) {
+    remoteVideo.play();
+  };
+  
   console.log(remoteStream)
   console.log(remoteVideo)
   console.log('Remote stream added.');
