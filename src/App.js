@@ -105,9 +105,9 @@ async function getMedia(constraints) {
 
   try {
     stream = await navigator.mediaDevices.getUserMedia(constraints);
-    console.log('Adding local stream.');
     localStream = stream;
     localVideo.srcObject = stream;
+    console.log('local stream added.');
     sendMessage('got user media', room);
     localVideo.onloadedmetadata = function(e) {
       localVideo.play();
@@ -139,8 +139,8 @@ function maybeStart() {
   console.log('>>>>>>> maybeStart() ', isStarted, localStream, isChannelReady);
   if (!isStarted && typeof localStream !== 'undefined' && isChannelReady) {
     console.log('>>>>>> creating peer connection');
-    createPeerConnection();
     pc.addStream(localStream);
+    createPeerConnection();
     isStarted = true;
     console.log('isInitiator', isInitiator);
     if (isInitiator) {
@@ -152,6 +152,7 @@ function maybeStart() {
 //Sending bye if user closes the window
 window.onbeforeunload = function() {
   sendMessage('bye', room);
+  hangup()
 };
 
 
@@ -217,6 +218,8 @@ function handleRemoteStreamAdded(event) {
   remoteStream = event.stream;
   remoteVideo.srcObject = remoteStream;
   remoteVideo.play()
+  console.log(remoteStream)
+  console.log(remoteVideo)
   console.log('Remote stream added.');
 }
 
