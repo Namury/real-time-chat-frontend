@@ -34,7 +34,7 @@ export default function Chat() {
               autoplay
               muted
               playsinline
-              poster="https://thetechnoskeptic.com/wp-content/uploads/2018/05/BlackBoxComposite_iStock_leolintangivanmollov_900.jpg"
+              // poster="https://thetechnoskeptic.com/wp-content/uploads/2018/05/BlackBoxComposite_iStock_leolintangivanmollov_900.jpg"
             ></video>
           </div>
           <div class="flex justify-center aspect-video">
@@ -43,7 +43,7 @@ export default function Chat() {
               class="h-12 sm:h-52 lg:h-96"
               autoplay
               playsinline
-              poster="https://thetechnoskeptic.com/wp-content/uploads/2018/05/BlackBoxComposite_iStock_leolintangivanmollov_900.jpg"
+              // poster="https://thetechnoskeptic.com/wp-content/uploads/2018/05/BlackBoxComposite_iStock_leolintangivanmollov_900.jpg"
             ></video>
           </div>
         </div>
