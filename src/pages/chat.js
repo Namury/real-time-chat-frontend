@@ -37,7 +37,7 @@ var turnConfig = {
 
 var pcConfig = turnConfig;
 
-var socket = io("localhost:3010", {
+var socket = io("https://namury-rtc-backend.herokuapp.com/", {
   withCredentials: true,
   extraHeaders: {
     "Access-Control-Allow-Origin": "*",
