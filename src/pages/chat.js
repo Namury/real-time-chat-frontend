@@ -1,14 +1,15 @@
 import { io } from "socket.io-client";
 import adapter from "webrtc-adapter";
-import { Link, useParams } from "react-router-dom";
 
 var isChannelReady = false;
 var isInitiator = false;
 var isStarted = false;
 var localStream;
-var pc;
 var remoteStream;
-var urlString = window.location.href.split('/');
+var sendChannel = null;
+var receiveChannel = null;
+var pc;
+var urlString = window.location.href.split("/");
 var room = urlString[urlString.length - 1].toString();
 
 var localStreamConstraints = {
@@ -16,7 +17,7 @@ var localStreamConstraints = {
   video: true,
 };
 
-var turnConfig = {
+var pcConfig = {
   iceServers: [
     { urls: ["stun:ss-turn2.xirsys.com"] },
     {
@@ -35,8 +36,6 @@ var turnConfig = {
   ],
 };
 
-var pcConfig = turnConfig;
-
 var socket = io("https://namury-rtc-backend.herokuapp.com/", {
   withCredentials: true,
   extraHeaders: {
@@ -44,7 +43,7 @@ var socket = io("https://namury-rtc-backend.herokuapp.com/", {
   },
 });
 
-if(room !== ""){
+if (room !== "") {
   socket.emit("create or join", room);
   console.log("Attempted to create or  join room", room);
 }
@@ -111,9 +110,27 @@ console.log("Getting user media with constraints", localStreamConstraints);
 
 var localVideo;
 var remoteVideo;
+var messageInput;
+var sendButton;
+var chatContainer;
+
 window.onload = function () {
   localVideo = document.querySelector("#localVideo");
   remoteVideo = document.querySelector("#remoteVideo");
+  messageInput = document.querySelector("#messageInput");
+  sendButton = document.querySelector("#sendButton");
+  chatContainer = document.querySelector("#chatContainer");
+
+  sendButton.addEventListener("click", sendChat, false);
+  messageInput.addEventListener(
+    "keypress",
+    function (e) {
+      if (e.key === "Enter") {
+        sendChat();
+      }
+    },
+    false
+  );
 };
 
 console.log("Going to find Local media");
@@ -148,6 +165,9 @@ function maybeStart() {
     createPeerConnection();
     pc.addStream(localStream);
     isStarted = true;
+    sendChannel = pc.createDataChannel(room + "Chat Data Channel");
+    sendChannel.onopen = handleSendChannelStatusChange;
+    sendChannel.onclose = handleSendChannelStatusChange;
     console.log("isInitiator", isInitiator);
     if (isInitiator) {
       doCall();
@@ -166,6 +186,7 @@ function createPeerConnection() {
   try {
     pc = new RTCPeerConnection(pcConfig);
     pc.onicecandidate = handleIceCandidate;
+    pc.ondatachannel = receiveChannelCallback;
     pc.onaddstream = handleRemoteStreamAdded;
     pc.onremovestream = handleRemoteStreamRemoved;
     console.log("Created RTCPeerConnnection");
@@ -255,36 +276,82 @@ function stop() {
   pc = null;
 }
 
+//message
+function sendChat(message) {
+  var message = messageInput.value;
+  var el = document.createElement("p");
+  var txtNode = document.createTextNode("Sender: " + message);
+  el.appendChild(txtNode);
+  chatContainer.appendChild(el);
+
+  sendChannel.send(message);
+
+  messageInput.value = "";
+  messageInput.focus();
+}
+
+function receiveChannelCallback(event) {
+  console.log("data channel received");
+  console.log(event.channel);
+  receiveChannel = event.channel;
+  receiveChannel.onmessage = handleReceiveMessage;
+  receiveChannel.onopen = handleReceiveChannelStatusChange;
+  receiveChannel.onclose = handleReceiveChannelStatusChange;
+}
+
+function handleReceiveMessage(event) {
+  var el = document.createElement("p");
+  var txtNode = document.createTextNode("Receiver: " + event.data);
+  el.appendChild(txtNode);
+  chatContainer.appendChild(el);
+}
+
+function handleReceiveChannelStatusChange(event) {
+  if (receiveChannel) {
+    console.log(
+      "Receive channel's status has changed to " + receiveChannel.readyState
+    );
+  }
+
+  // Here you would do stuff that needs to be done
+  // when the channel's status changes.
+}
+
+function handleSendChannelStatusChange(event) {
+  if (sendChannel) {
+    var state = sendChannel.readyState;
+
+    if (state === "open") {
+      messageInput.disabled = false;
+      messageInput.focus();
+      sendButton.disabled = false;
+    } else {
+      messageInput.disabled = true;
+      sendButton.disabled = true;
+    }
+  }
+}
+
 export default function Chat() {
-  // const room = Object.values(useParams())[0].toString();
-
-  // initRoom(room);
-
   return (
     <div className="">
-      {/* <header classNameName="text-3xl font-bold underline text-center">
-              Real Time Chat
-          </header> */}
       <div className="flex h-screen border">
         <div className="flex flex-col h-full p-8">
-          <div className="flex-grow">
-            <div className="">lorem1: Lorem Ipsum Dolor Sit Amet</div>
-            <div>lorem2: Dolor Sit Amet Lorem Ipsum</div>
-            <div>lorem1: Lorem Ipsum Dolor Sit Amet</div>
-            <div>lorem2: Dolor Sit Amet Lorem Ipsum</div>
-            <div>lorem1: Lorem Ipsum Dolor Sit Amet</div>
-            <div>lorem2: Dolor Sit Amet Lorem Ipsum</div>
-            <div>lorem1: Lorem Ipsum Dolor Sit Amet</div>
-            <div>lorem2: Dolor Sit Amet Lorem Ipsum</div>
-            <div>lorem1: Lorem Ipsum Dolor Sit Amet</div>
-            <div>lorem2: Dolor Sit Amet Lorem Ipsum</div>
+          <div id="chatContainer" className="flex-grow">
+            <div id="chat" className="">
+              lorem1: Lorem Ipsum Dolor Sit Amet
+            </div>
           </div>
           <div className="flex w-full">
             <input
+              id="messageInput"
               type="textarea"
               className="form-textarea flex-grow mr-4 border-2"
             />
-            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded flex-initial w-24">
+            <button
+              id="sendButton"
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded flex-initial w-24"
+            >
               Send
             </button>
           </div>
