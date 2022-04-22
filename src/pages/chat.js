@@ -1,5 +1,4 @@
 import { io } from "socket.io-client";
-import adapter from "webrtc-adapter";
 
 var isChannelReady = false;
 var isInitiator = false;
@@ -165,6 +164,7 @@ function maybeStart() {
     createPeerConnection();
     pc.addStream(localStream);
     isStarted = true;
+    console.log(">>>>>> creating data channel");
     sendChannel = pc.createDataChannel(room + "Chat Data Channel");
     sendChannel.onopen = handleSendChannelStatusChange;
     sendChannel.onclose = handleSendChannelStatusChange;
@@ -277,14 +277,14 @@ function stop() {
 }
 
 //message
-function sendChat(message) {
-  var message = messageInput.value;
+function sendChat() {
+  var content = messageInput.value;
   var el = document.createElement("p");
-  var txtNode = document.createTextNode("Sender: " + message);
+  var txtNode = document.createTextNode("Sender: " + content);
   el.appendChild(txtNode);
   chatContainer.appendChild(el);
 
-  sendChannel.send(message);
+  sendChannel.send(content);
 
   messageInput.value = "";
   messageInput.focus();
@@ -347,10 +347,12 @@ export default function Chat() {
               id="messageInput"
               type="textarea"
               className="form-textarea flex-grow mr-4 border-2"
+              disabled
             />
             <button
               id="sendButton"
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded flex-initial w-24"
+              disabled
             >
               Send
             </button>

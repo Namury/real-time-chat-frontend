@@ -1,6 +1,6 @@
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import React, { Suspense, Component } from "react";
+import React, { Suspense } from "react";
 
 const Chat = React.lazy(() => import("./pages/chat"));
 const Login = React.lazy(() => import("./pages/login"));
