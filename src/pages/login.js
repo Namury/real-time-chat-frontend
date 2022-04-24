@@ -1,6 +1,13 @@
 var baseUrl = window.location.origin;
 console.log(baseUrl);
 
+navigator.mediaDevices
+      .getUserMedia({ audio: true, video: true })
+      .then()
+      .catch(function (e) {
+        alert("getUserMedia() error: " + e.name);
+      });
+
 export default function Login() {
   return (
     <div>

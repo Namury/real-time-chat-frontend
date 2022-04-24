@@ -11,10 +11,23 @@ var pc;
 var urlString = window.location.href.split("/");
 var room = urlString[urlString.length - 1].toString();
 
-var localStreamConstraints = {
-  audio: true,
-  video: true,
-};
+let preferedCamera = localStorage.getItem("preferedCamera");
+let preferedMicrophone = localStorage.getItem("preferedMicrophone");
+
+var localStreamConstraints = {};
+
+if (preferedCamera !== null && preferedMicrophone !== null) {
+  localStreamConstraints = {
+    audio: { deviceId: { exact: preferedMicrophone } },
+    video: { deviceId: { exact: preferedCamera } },
+  };
+} else {
+  localStreamConstraints = {
+    audio: true,
+    video: true,
+  };
+  alert("Using Default Devices");
+}
 
 var pcConfig = {
   iceServers: [

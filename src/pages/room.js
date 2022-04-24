@@ -1,31 +1,71 @@
 var baseUrl = window.location.origin;
 
+var cameraSelector;
+var microphoneSelector;
+var changeButton;
 var localVideo;
+var deviceSelected = false;
+var preferedCamera = "";
+var preferedMicrophone = "";
+
+localStorage.removeItem("preferedCamera");
+localStorage.removeItem("preferedMicrophone");
+
 window.onload = function () {
+  cameraSelector = document.querySelector("#cameraSelector");
+  microphoneSelector = document.querySelector("#micSelector");
+  changeButton = document.querySelector("#changeButton");
   localVideo = document.querySelector("#localVideo");
+
+  navigator.mediaDevices
+    .enumerateDevices()
+    .then(listDevice)
+    .catch(function (err) {
+      console.log(err.name + ": " + err.message);
+    });
+
+  changeButton.addEventListener("click", (event) => {
+    // if (typeof localVideo !== "undefined") {
+    //   stopMediaTracks(localVideo);
+    // }
+    const videoConstraints = {};
+    const audioConstraints = {};
+
+    preferedCamera = cameraSelector.value;
+    preferedMicrophone = microphoneSelector.value;
+
+    videoConstraints.deviceId = { exact: preferedCamera };
+    audioConstraints.deviceId = { exact: preferedMicrophone };
+
+    const constraints = {
+      video: videoConstraints,
+      audio: audioConstraints,
+    };
+
+    localStorage.setItem("preferedCamera", cameraSelector.value);
+    localStorage.setItem("preferedMicrophone", microphoneSelector.value);
+
+    navigator.mediaDevices
+      .getUserMedia(constraints)
+      .then(gotStream)
+      .catch(function (e) {
+        console.log(localVideo);
+        deviceSelected = false
+        alert("getUserMedia() error: " + e.name);
+      });
+  });
 };
 
-navigator.mediaDevices.enumerateDevices()
-.then(function(devices) {
-  devices.forEach(function(device) {
-    console.log(device.kind + ": " + device.label +
-                " id = " + device.deviceId);
-  });
-})
-.catch(function(err) {
-  console.log(err.name + ": " + err.message);
-});
-
-navigator.mediaDevices
-  .getUserMedia({
-    audio: true,
-    video: true,
-  })
-  .then(gotStream)
-  .catch(function (e) {
-    console.log(localVideo);
-    alert("getUserMedia() error: " + e.name);
-  });
+// navigator.mediaDevices
+//   .getUserMedia({
+//     audio: true,
+//     video: true,
+//   })
+//   .then(gotStream)
+//   .catch(function (e) {
+//     console.log(localVideo);
+//     alert("getUserMedia() error: " + e.name);
+//   });
 
 //If found local stream
 function gotStream(stream) {
@@ -34,6 +74,38 @@ function gotStream(stream) {
   localVideo.onloadedmetadata = function (e) {
     localVideo.play();
   };
+  deviceSelected = true
+}
+
+function listDevice(devices) {
+  console.log(devices);
+  cameraSelector.innerHTML = "";
+  microphoneSelector.innerHTML = "";
+
+  devices.forEach(function (device) {
+    if (device.kind === "videoinput") {
+      const option = document.createElement("option");
+      // if (device.deviceId === "default") option.selected = true;
+      option.value = device.deviceId;
+      const label = device.label;
+      const textNode = document.createTextNode(label);
+      option.appendChild(textNode);
+      cameraSelector.appendChild(option);
+    }
+    if (
+      device.kind === "audioinput" &&
+      device.deviceId !== "default" &&
+      device.deviceId !== "communications"
+    ) {
+      const option = document.createElement("option");
+      // if (device.deviceId === "default") option.selected = true;
+      option.value = device.deviceId;
+      const label = device.label;
+      const textNode = document.createTextNode(label);
+      option.appendChild(textNode);
+      microphoneSelector.appendChild(option);
+    }
+  });
 }
 
 export default function Room() {
@@ -48,7 +120,7 @@ export default function Room() {
             </div>
             <a href={baseUrl + "/chat/room1"}>
               <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded flex-initial w-24">
-                Join
+                Join 
               </button>
             </a>
           </div>
@@ -125,31 +197,38 @@ export default function Room() {
               poster="https://thetechnoskeptic.com/wp-content/uploads/2018/05/BlackBoxComposite_iStock_leolintangivanmollov_900.jpg"
             ></video>
           </div>
-          <div className="flex align-center justify-center aspect-video">
-            <div className="h-52 px-7 w-[300px] rounded-[12px] bg-gray-400 p-4">
-              <div className="py-5 bg-yellow">
+          <div className="flex align-center justify-center">
+            <div className="h-52 px-7 py-2 rounded-[12px] bg-gray-400">
+              <div className="">
                 <p className="text-xl font-semibold text-black">Config</p>
-                <form>
-                  <div>Camera</div>
-                  <select name="camera" id="camera" className="flex-grow">
-                    <option>Camera 1</option>
-                    <option>Camera 2</option>
-                    <option>Camera 3</option>
-                    <option>Camera 4</option>
-                  </select>
-                  <div>Microphone</div>
-                  <select name="mic" id="mic" className="flex-grow">
-                    <option>Mic 1</option>
-                    <option>Mic 2</option>
-                    <option>Mic 3</option>
-                    <option>Mic 4</option>
-                  </select>
-                  <div className="flex justify-center items-center mt-2">
-                    <button className="h-8 w-[150px] bg-blue-500 text-sm text-white rounded-lg hover:bg-blue-600">
-                      Change
-                    </button>
+                <div className="pt-2">
+                  <div>
+                    <label htmlFor="cameraSelector">Camera</label>
                   </div>
-                </form>
+                  <select
+                    name="cameraSelector"
+                    id="cameraSelector"
+                    className="flex-grow"
+                  ></select>
+                </div>
+                <div className="pt-2">
+                  <div>
+                    <label htmlFor="micSelector">Microphone</label>
+                  </div>
+                  <select
+                    name="micSelector"
+                    id="micSelector"
+                    className="flex-grow"
+                  ></select>
+                </div>
+                <div className="flex justify-center items-center mt-2">
+                  <button
+                    id="changeButton"
+                    className="h-8 w-[150px] bg-blue-500 text-sm text-white rounded-lg hover:bg-blue-600"
+                  >
+                    Select
+                  </button>
+                </div>
               </div>
             </div>
           </div>
