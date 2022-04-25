@@ -1,3 +1,7 @@
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+// const APIUrl = "https://namury-rtc-backend.herokuapp.com/chat/room";
+
 var baseUrl = window.location.origin;
 
 var cameraSelector;
@@ -50,22 +54,11 @@ window.onload = function () {
       .then(gotStream)
       .catch(function (e) {
         console.log(localVideo);
-        deviceSelected = false
+        deviceSelected = false;
         alert("getUserMedia() error: " + e.name);
       });
   });
 };
-
-// navigator.mediaDevices
-//   .getUserMedia({
-//     audio: true,
-//     video: true,
-//   })
-//   .then(gotStream)
-//   .catch(function (e) {
-//     console.log(localVideo);
-//     alert("getUserMedia() error: " + e.name);
-//   });
 
 //If found local stream
 function gotStream(stream) {
@@ -74,11 +67,11 @@ function gotStream(stream) {
   localVideo.onloadedmetadata = function (e) {
     localVideo.play();
   };
-  deviceSelected = true
+  deviceSelected = true;
 }
 
 function listDevice(devices) {
-  console.log(devices);
+  // console.log(devices);
   cameraSelector.innerHTML = "";
   microphoneSelector.innerHTML = "";
 
@@ -109,6 +102,18 @@ function listDevice(devices) {
 }
 
 export default function Room() {
+  const [roomCount, setRoomCount] = useState([0, 0, 0, 0, 0, 0]);
+
+  useEffect(() => {
+    axios
+      .get("https://namury-rtc-backend.herokuapp.com/chat/room")
+      .then((response) => {
+        setRoomCount(response.data.content);
+      });
+  }, []);
+
+  console.log(roomCount);
+
   return (
     <div>
       <div className="flex h-screen border">
@@ -116,72 +121,132 @@ export default function Room() {
           <div className="flex w-full mb-4">
             <div className="flex flex-col mr-4">
               <p>Room 1</p>
-              <p>Capacity 0/2</p>
+              <p>Capacity {roomCount[0]}/2</p>
             </div>
             <a href={baseUrl + "/chat/room1"}>
-              <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded flex-initial w-24">
-                Join 
-              </button>
+              {roomCount[0] >= 2 && (
+                <button
+                  className="bg-blue-300 text-white font-bold rounded flex-initial w-24 h-full"
+                  disabled
+                >
+                  Join
+                </button>
+              )}
+              {roomCount[0] < 2 && (
+                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded flex-initial w-24 h-full">
+                  Join
+                </button>
+              )}
             </a>
           </div>
 
           <div className="flex w-full mb-4">
             <div className="flex flex-col mr-4">
               <p>Room 2</p>
-              <p>Capacity 0/2</p>
+              <p>Capacity {roomCount[1]}/2</p>
             </div>
             <a href={baseUrl + "/chat/room2"}>
-              <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded flex-initial w-24">
-                Join
-              </button>
+            {roomCount[1] >= 2 && (
+                <button
+                  className="bg-blue-300 text-white font-bold rounded flex-initial w-24 h-full"
+                  disabled
+                >
+                  Join
+                </button>
+              )}
+              {roomCount[1] < 2 && (
+                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded flex-initial w-24 h-full">
+                  Join
+                </button>
+              )}
             </a>
           </div>
 
           <div className="flex w-full mb-4">
             <div className="flex flex-col mr-4">
               <p>Room 3</p>
-              <p>Capacity 0/2</p>
+              <p>Capacity {roomCount[2]}/2</p>
             </div>
             <a href={baseUrl + "/chat/room3"}>
-              <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded flex-initial w-24">
-                Join
-              </button>
+            {roomCount[2] >= 2 && (
+                <button
+                  className="bg-blue-300 text-white font-bold rounded flex-initial w-24 h-full"
+                  disabled
+                >
+                  Join
+                </button>
+              )}
+              {roomCount[2] < 2 && (
+                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded flex-initial w-24 h-full">
+                  Join
+                </button>
+              )}
             </a>
           </div>
 
           <div className="flex w-full mb-4">
             <div className="flex flex-col mr-4">
               <p>Room 4</p>
-              <p>Capacity 0/2</p>
+              <p>Capacity {roomCount[3]}/2</p>
             </div>
             <a href={baseUrl + "/chat/room4"}>
-              <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded flex-initial w-24">
-                Join
-              </button>
+            {roomCount[3] >= 2 && (
+                <button
+                  className="bg-blue-300 text-white font-bold rounded flex-initial w-24 h-full"
+                  disabled
+                >
+                  Join
+                </button>
+              )}
+              {roomCount[3] < 2 && (
+                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded flex-initial w-24 h-full">
+                  Join
+                </button>
+              )}
             </a>
           </div>
 
           <div className="flex w-full mb-4">
             <div className="flex flex-col mr-4">
               <p>Room 5</p>
-              <p>Capacity 0/2</p>
+              <p>Capacity {roomCount[4]}/2</p>
             </div>
             <a href={baseUrl + "/chat/room5"}>
-              <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded flex-initial w-24">
-                Join
-              </button>
+            {roomCount[4] >= 2 && (
+                <button
+                  className="bg-blue-300 text-white font-bold rounded flex-initial w-24 h-full"
+                  disabled
+                >
+                  Join
+                </button>
+              )}
+              {roomCount[4] < 2 && (
+                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded flex-initial w-24 h-full">
+                  Join
+                </button>
+              )}
             </a>
           </div>
 
           <div className="flex w-full mb-4">
             <div className="flex flex-col mr-4">
               <p>Room 6</p>
-              <p>Capacity 0/2</p>
+              <p>Capacity {roomCount[5]}/2</p>
             </div>
             <a href={baseUrl + "/chat/room6"}>
-              <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded flex-initial w-24">
-                Join
-              </button>
+            {roomCount[5] >= 2 && (
+                <button
+                  className="bg-blue-300 text-white font-bold rounded flex-initial w-24 h-full"
+                  disabled
+                >
+                  Join
+                </button>
+              )}
+              {roomCount[5] < 2 && (
+                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded flex-initial w-24 h-full">
+                  Join
+                </button>
+              )}
             </a>
           </div>
         </div>
