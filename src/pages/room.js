@@ -106,7 +106,7 @@ export default function Room() {
 
   useEffect(() => {
     axios
-      .get("https://namury-rtc-backend.herokuapp.com/chat/room")
+      .get("https://namury-rtc-backend.herokuapp.com/chat/room/all")
       .then((response) => {
         setRoomCount(response.data.content);
       });
