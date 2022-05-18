@@ -292,10 +292,26 @@ function stop() {
 //message
 function sendChat() {
   var content = messageInput.value;
-  var el = document.createElement("p");
-  var txtNode = document.createTextNode("Sender: " + content);
-  el.appendChild(txtNode);
-  chatContainer.appendChild(el);
+  var username = document.createTextNode("Sender"); //change username
+  var container = document.createElement("div");
+  var chatDiv = document.createElement("div");
+  var pChat = document.createElement("p");
+  var pUsername = document.createElement("p");
+  var txtChat = document.createTextNode(content);
+
+  chatDiv.setAttribute("class", "rounded-[12px] bg-blue-400 p-2 pr-3 w-fit text-left");
+  container.setAttribute("class", "mx-2 text-left");
+  pUsername.setAttribute("class", "text-sm")
+
+  pChat.appendChild(txtChat);
+  pUsername.appendChild(username)
+
+  chatDiv.appendChild(pChat);
+  
+  container.appendChild(pUsername);
+  container.appendChild(chatDiv);
+  
+  chatContainer.appendChild(container);
 
   sendChannel.send(content);
 
@@ -313,10 +329,27 @@ function receiveChannelCallback(event) {
 }
 
 function handleReceiveMessage(event) {
-  var el = document.createElement("p");
-  var txtNode = document.createTextNode("Receiver: " + event.data);
-  el.appendChild(txtNode);
-  chatContainer.appendChild(el);
+  var username = document.createTextNode("Reciever"); //change username
+  var container = document.createElement("div");
+  var chatDiv = document.createElement("div");
+  var pChat = document.createElement("p");
+  var pUsername = document.createElement("p");
+  var txtChat = document.createTextNode(event.data);
+
+  chatDiv.setAttribute("class", "flex justify-end justify-items-end");
+  container.setAttribute("class", "mx-2 text-right");
+  pChat.setAttribute("class", "rounded-[12px] bg-green-400 p-2 pl-3 w-fit")
+  pUsername.setAttribute("class", "text-sm")
+
+  pChat.appendChild(txtChat);
+  pUsername.appendChild(username)
+
+  chatDiv.appendChild(pChat);
+  
+  container.appendChild(pUsername);
+  container.appendChild(chatDiv);
+  
+  chatContainer.appendChild(container);
 }
 
 function handleReceiveChannelStatusChange(event) {
@@ -348,11 +381,14 @@ function handleSendChannelStatusChange(event) {
 export default function Chat() {
   return (
     <div className="">
-      <div className="flex h-screen border">
-        <div className="flex flex-col h-full p-8">
+      <div className="flex justify-center items-center h-screen bg-gray-400">
+        <div className="flex flex-col h-full px-7 rounded-[12px] bg-white p-4">
           <div id="chatContainer" className="flex-grow">
-            <div id="chat" className="">
-              lorem1: Lorem Ipsum Dolor Sit Amet
+            <div className="mx-2 text-right">
+              <p className="text-sm">lorem1</p>
+              <div className="flex justify-end justify-items-end">
+                <p className="rounded-[12px] bg-green-400 p-2 pl-5 w-fit">Lorem Ipsum Dolor Sit Amet</p>
+              </div>
             </div>
           </div>
           <div className="flex w-full">
@@ -373,20 +409,20 @@ export default function Chat() {
         </div>
 
         <div className="flex flex-col w-full">
-          <div className="flex align-center justify-center aspect-video">
+          <div className="flex align-center justify-center py-5">
             <video
               id="localVideo"
-              className="h-12 sm:h-52 lg:h-96"
+              className="h-12 sm:h-52 lg:h-96 aspect-video object-cover"
               autoPlay
               muted
               playsInline
               poster="https://thetechnoskeptic.com/wp-content/uploads/2018/05/BlackBoxComposite_iStock_leolintangivanmollov_900.jpg"
             ></video>
           </div>
-          <div className="flex justify-center aspect-video">
+          <div className="flex justify-center py-5">
             <video
               id="remoteVideo"
-              className="h-12 sm:h-52 lg:h-96"
+              className="h-12 sm:h-52 lg:h-96 aspect-video object-cover"
               autoPlay
               playsInline
               poster="https://thetechnoskeptic.com/wp-content/uploads/2018/05/BlackBoxComposite_iStock_leolintangivanmollov_900.jpg"

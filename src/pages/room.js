@@ -1,105 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 // const APIUrl = "https://namury-rtc-backend.herokuapp.com/chat/room";
-
 var baseUrl = window.location.origin;
-
-var cameraSelector;
-var microphoneSelector;
-var changeButton;
-var localVideo;
-var deviceSelected = false;
-var preferedCamera = "";
-var preferedMicrophone = "";
-
-localStorage.removeItem("preferedCamera");
-localStorage.removeItem("preferedMicrophone");
-
-window.onload = function () {
-  cameraSelector = document.querySelector("#cameraSelector");
-  microphoneSelector = document.querySelector("#micSelector");
-  changeButton = document.querySelector("#changeButton");
-  localVideo = document.querySelector("#localVideo");
-
-  navigator.mediaDevices
-    .enumerateDevices()
-    .then(listDevice)
-    .catch(function (err) {
-      console.log(err.name + ": " + err.message);
-    });
-
-  changeButton.addEventListener("click", (event) => {
-    // if (typeof localVideo !== "undefined") {
-    //   stopMediaTracks(localVideo);
-    // }
-    const videoConstraints = {};
-    const audioConstraints = {};
-
-    preferedCamera = cameraSelector.value;
-    preferedMicrophone = microphoneSelector.value;
-
-    videoConstraints.deviceId = { exact: preferedCamera };
-    audioConstraints.deviceId = { exact: preferedMicrophone };
-
-    const constraints = {
-      video: videoConstraints,
-      audio: audioConstraints,
-    };
-
-    localStorage.setItem("preferedCamera", cameraSelector.value);
-    localStorage.setItem("preferedMicrophone", microphoneSelector.value);
-
-    navigator.mediaDevices
-      .getUserMedia(constraints)
-      .then(gotStream)
-      .catch(function (e) {
-        console.log(localVideo);
-        deviceSelected = false;
-        alert("getUserMedia() error: " + e.name);
-      });
-  });
-};
-
-//If found local stream
-function gotStream(stream) {
-  console.log("Adding local stream.");
-  localVideo.srcObject = stream;
-  localVideo.onloadedmetadata = function (e) {
-    localVideo.play();
-  };
-  deviceSelected = true;
-}
-
-function listDevice(devices) {
-  // console.log(devices);
-  cameraSelector.innerHTML = "";
-  microphoneSelector.innerHTML = "";
-
-  devices.forEach(function (device) {
-    if (device.kind === "videoinput") {
-      const option = document.createElement("option");
-      // if (device.deviceId === "default") option.selected = true;
-      option.value = device.deviceId;
-      const label = device.label;
-      const textNode = document.createTextNode(label);
-      option.appendChild(textNode);
-      cameraSelector.appendChild(option);
-    }
-    if (
-      device.kind === "audioinput" &&
-      device.deviceId !== "default" &&
-      device.deviceId !== "communications"
-    ) {
-      const option = document.createElement("option");
-      // if (device.deviceId === "default") option.selected = true;
-      option.value = device.deviceId;
-      const label = device.label;
-      const textNode = document.createTextNode(label);
-      option.appendChild(textNode);
-      microphoneSelector.appendChild(option);
-    }
-  });
-}
 
 export default function Room() {
   const [roomCount, setRoomCount] = useState([0, 0, 0, 0, 0, 0]);
@@ -116,8 +18,9 @@ export default function Room() {
 
   return (
     <div>
-      <div className="flex h-screen border">
-        <div className="flex flex-col h-full w-full p-8 ">
+      <div className="flex justify-center items-center min-h-screen bg-gray-400">
+        <div className="h-full px-7 w-auto rounded-[12px] bg-white p-4">
+        <p className="text-2xl font-semibold text-black pb-4">Select Room</p>
           <div className="flex w-full mb-4">
             <div className="flex flex-col mr-4">
               <p>Room 1</p>
@@ -248,54 +151,6 @@ export default function Room() {
                 </button>
               )}
             </a>
-          </div>
-        </div>
-
-        <div className="flex flex-col w-full">
-          <div className="flex align-center justify-center aspect-video">
-            <video
-              id="localVideo"
-              className="h-12 sm:h-52 lg:h-96"
-              autoPlay
-              muted
-              playsInline
-              poster="https://thetechnoskeptic.com/wp-content/uploads/2018/05/BlackBoxComposite_iStock_leolintangivanmollov_900.jpg"
-            ></video>
-          </div>
-          <div className="flex align-center justify-center">
-            <div className="h-52 px-7 py-2 rounded-[12px] bg-gray-400">
-              <div className="">
-                <p className="text-xl font-semibold text-black">Config</p>
-                <div className="pt-2">
-                  <div>
-                    <label htmlFor="cameraSelector">Camera</label>
-                  </div>
-                  <select
-                    name="cameraSelector"
-                    id="cameraSelector"
-                    className="flex-grow"
-                  ></select>
-                </div>
-                <div className="pt-2">
-                  <div>
-                    <label htmlFor="micSelector">Microphone</label>
-                  </div>
-                  <select
-                    name="micSelector"
-                    id="micSelector"
-                    className="flex-grow"
-                  ></select>
-                </div>
-                <div className="flex justify-center items-center mt-2">
-                  <button
-                    id="changeButton"
-                    className="h-8 w-[150px] bg-blue-500 text-sm text-white rounded-lg hover:bg-blue-600"
-                  >
-                    Select
-                  </button>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
