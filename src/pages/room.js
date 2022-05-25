@@ -1,4 +1,8 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { UserContext } from "context/UserContext";
+import authAPI from "api/authAPI";
 import axios from "axios";
 // const APIUrl = "https://namury-rtc-backend.herokuapp.com/chat/room";
 var baseUrl = window.location.origin;
@@ -14,13 +18,39 @@ export default function Room() {
       });
   }, []);
 
-  console.log(roomCount);
+  const { user, setUser } = useContext(UserContext);
+  let navigate = useNavigate();
+
+  const logout = async () => {
+    try {
+      const res = authAPI.logout();
+      if (res === true) {
+        setUser(null);
+        navigate("/", { replace: true });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const config = () => {
+    try {
+      navigate("/config", { replace: true });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  console.log(user);
 
   return (
     <div>
       <div className="flex justify-center items-center min-h-screen bg-gray-400">
         <div className="h-full px-7 w-auto rounded-[12px] bg-white p-4">
-        <p className="text-2xl font-semibold text-black pb-4">Select Room</p>
+          <div className="text-center pb-4">
+            <p className="text-2xl font-semibold text-black">Select Room</p>
+            <div className="font-bold">{`${user?.username}`}</div>
+          </div>
           <div className="flex w-full mb-4">
             <div className="flex flex-col mr-4">
               <p>Room 1</p>
@@ -49,7 +79,7 @@ export default function Room() {
               <p>Capacity {roomCount[1]}/2</p>
             </div>
             <a href={baseUrl + "/chat/room2"}>
-            {roomCount[1] >= 2 && (
+              {roomCount[1] >= 2 && (
                 <button
                   className="bg-blue-300 text-white font-bold rounded flex-initial w-24 h-full"
                   disabled
@@ -71,7 +101,7 @@ export default function Room() {
               <p>Capacity {roomCount[2]}/2</p>
             </div>
             <a href={baseUrl + "/chat/room3"}>
-            {roomCount[2] >= 2 && (
+              {roomCount[2] >= 2 && (
                 <button
                   className="bg-blue-300 text-white font-bold rounded flex-initial w-24 h-full"
                   disabled
@@ -93,7 +123,7 @@ export default function Room() {
               <p>Capacity {roomCount[3]}/2</p>
             </div>
             <a href={baseUrl + "/chat/room4"}>
-            {roomCount[3] >= 2 && (
+              {roomCount[3] >= 2 && (
                 <button
                   className="bg-blue-300 text-white font-bold rounded flex-initial w-24 h-full"
                   disabled
@@ -115,7 +145,7 @@ export default function Room() {
               <p>Capacity {roomCount[4]}/2</p>
             </div>
             <a href={baseUrl + "/chat/room5"}>
-            {roomCount[4] >= 2 && (
+              {roomCount[4] >= 2 && (
                 <button
                   className="bg-blue-300 text-white font-bold rounded flex-initial w-24 h-full"
                   disabled
@@ -137,7 +167,7 @@ export default function Room() {
               <p>Capacity {roomCount[5]}/2</p>
             </div>
             <a href={baseUrl + "/chat/room6"}>
-            {roomCount[5] >= 2 && (
+              {roomCount[5] >= 2 && (
                 <button
                   className="bg-blue-300 text-white font-bold rounded flex-initial w-24 h-full"
                   disabled
@@ -152,6 +182,22 @@ export default function Room() {
               )}
             </a>
           </div>
+          <button
+            className={
+              "bg-blue-500 text-white group flex rounded-md items-center w-full p-2 my-2 text-sm space-x-2"
+            }
+            onClick={config}
+          >
+            <div>Config</div>
+          </button>
+          <button
+            className={
+              "bg-red-500 text-white group flex rounded-md items-center w-full p-2 my-2 text-sm space-x-2"
+            }
+            onClick={logout}
+          >
+            <div>Logout</div>
+          </button>
         </div>
       </div>
       <script

@@ -1,3 +1,8 @@
+import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { UserContext } from "context/UserContext";
+import authAPI from "api/authAPI";
+
 var baseUrl = window.location.origin;
 var cameraSelector;
 var microphoneSelector;
@@ -9,7 +14,7 @@ var preferedMicrophone = "";
 localStorage.removeItem("preferedCamera");
 localStorage.removeItem("preferedMicrophone");
 
-window.onload = function () {
+function initConfig() {
   cameraSelector = document.querySelector("#cameraSelector");
   microphoneSelector = document.querySelector("#micSelector");
   changeButton = document.querySelector("#changeButton");
@@ -51,13 +56,12 @@ window.onload = function () {
         alert("getUserMedia() error: " + e.name);
       });
   });
-};
-
+}
 
 //If found local stream
 function gotStream(stream) {
   console.log("Adding local stream.");
-  
+
   localVideo.srcObject = stream;
   localVideo.onloadedmetadata = function (e) {
     localVideo.play();
@@ -96,11 +100,31 @@ function listDevice(devices) {
 }
 
 export default function Config() {
+  const { user, setUser } = useContext(UserContext);
+  let navigate = useNavigate();
+
+  const logout = async () => {
+    try {
+      const res = authAPI.logout();
+      if (res === true) {
+        setUser(null);
+        navigate("/", { replace: true });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  window.onload = setTimeout(initConfig, 100);
+
   return (
     <div>
       <div className="flex justify-center items-center min-h-screen bg-gray-400">
         <div className="h-full px-7 w-auto rounded-[12px] bg-white p-4">
-          <p className="text-2xl font-semibold text-black">Config</p>
+          <div className="text-center">
+            <p className="text-2xl font-semibold text-black">Config</p>
+            <div className="font-bold">{`${user?.username}`}</div>
+          </div>
           <div className="flex flex-col w-full">
             <div className="flex align-center justify-center">
               <video
@@ -151,6 +175,14 @@ export default function Config() {
                         Select
                       </button>
                     </a>
+                  </div>
+                  <div className="flex justify-center items-center mt-2">
+                    <button
+                      onClick={logout}
+                      className="h-8 w-[150px] bg-red-500 text-sm text-white rounded-lg hover:bg-red-600"
+                    >
+                      Logout
+                    </button>
                   </div>
                 </div>
               </div>

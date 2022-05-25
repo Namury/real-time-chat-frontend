@@ -50,9 +50,6 @@ var pcConfig = {
 
 var socket = io("https://namury-rtc-backend.herokuapp.com/", {
   withCredentials: true,
-  extraHeaders: {
-    "Access-Control-Allow-Origin": "*",
-  },
 });
 
 if (room !== "") {
@@ -126,7 +123,7 @@ var messageInput;
 var sendButton;
 var chatContainer;
 
-window.onload = function () {
+function initChat() {
   localVideo = document.querySelector("#localVideo");
   remoteVideo = document.querySelector("#remoteVideo");
   messageInput = document.querySelector("#messageInput");
@@ -143,16 +140,16 @@ window.onload = function () {
     },
     false
   );
-};
 
-console.log("Going to find Local media");
-navigator.mediaDevices
+  console.log("Going to find Local media");
+  navigator.mediaDevices
   .getUserMedia(localStreamConstraints)
   .then(gotStream)
   .catch(function (e) {
     console.log(localVideo);
     alert("getUserMedia() error: " + e.name);
   });
+};
 
 //If found local stream
 function gotStream(stream) {
@@ -292,31 +289,33 @@ function stop() {
 //message
 function sendChat() {
   var content = messageInput.value;
-  var username = document.createTextNode("Sender"); //change username
-  var container = document.createElement("div");
-  var chatDiv = document.createElement("div");
-  var pChat = document.createElement("p");
-  var pUsername = document.createElement("p");
-  var txtChat = document.createTextNode(content);
-
-  chatDiv.setAttribute("class", "rounded-[12px] bg-blue-400 p-2 pr-3 w-fit text-left");
-  container.setAttribute("class", "mx-2 text-left");
-  pUsername.setAttribute("class", "text-sm")
-
-  pChat.appendChild(txtChat);
-  pUsername.appendChild(username)
-
-  chatDiv.appendChild(pChat);
+  if(content !== ""){
+    var username = document.createTextNode("Sender"); //change username
+    var container = document.createElement("div");
+    var chatDiv = document.createElement("div");
+    var pChat = document.createElement("p");
+    var pUsername = document.createElement("p");
+    var txtChat = document.createTextNode(content);
   
-  container.appendChild(pUsername);
-  container.appendChild(chatDiv);
+    chatDiv.setAttribute("class", "rounded-[12px] bg-blue-400 p-2 pr-3 w-fit text-left");
+    container.setAttribute("class", "mx-2 text-left");
+    pUsername.setAttribute("class", "text-sm")
   
-  chatContainer.appendChild(container);
-
-  sendChannel.send(content);
-
-  messageInput.value = "";
-  messageInput.focus();
+    pChat.appendChild(txtChat);
+    pUsername.appendChild(username)
+  
+    chatDiv.appendChild(pChat);
+    
+    container.appendChild(pUsername);
+    container.appendChild(chatDiv);
+    
+    chatContainer.appendChild(container);
+  
+    sendChannel.send(content);
+  
+    messageInput.value = "";
+    messageInput.focus();
+  }
 }
 
 function receiveChannelCallback(event) {
@@ -379,17 +378,20 @@ function handleSendChannelStatusChange(event) {
 }
 
 export default function Chat() {
+
+  window.onload = setTimeout(initChat, 1000);
+
   return (
     <div className="">
       <div className="flex justify-center items-center h-screen bg-gray-400">
         <div className="flex flex-col h-full px-7 rounded-[12px] bg-white p-4">
           <div id="chatContainer" className="flex-grow">
-            <div className="mx-2 text-right">
+            {/* <div className="mx-2 text-right">
               <p className="text-sm">lorem1</p>
               <div className="flex justify-end justify-items-end">
                 <p className="rounded-[12px] bg-green-400 p-2 pl-5 w-fit">Lorem Ipsum Dolor Sit Amet</p>
               </div>
-            </div>
+            </div> */}
           </div>
           <div className="flex w-full">
             <input
