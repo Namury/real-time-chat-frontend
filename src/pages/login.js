@@ -26,12 +26,13 @@ export default function Login() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({ resolver: yupResolver(loginSchema) });
+  } = useForm({ resolver: yupResolver(loginSchema),  });
 
   const submitForm = async (data) => {
     try {
+      snackbarRef.current.warning("Loading..");
       const res = await authAPI.login(data);
-      console.log(res.data);
+      snackbarRef.current.success("Login Success!");
       setUser(res.data.content);
     } catch (error) {
       snackbarRef.current.error("Login gagal!");
@@ -68,14 +69,14 @@ export default function Login() {
                   Submit
                 </button>
               </div>
-              <div className="mt-5 text-grey-dark text-sm">
+              <div className="mt-5 text-grey-dark text-center text-sm flex justify-center">
                 Don't have an account?
-                <a
+                <div 
                   className="text-blue-500 hover:underline cursor-pointer"
                   onClick={() => navigate("/register")}
                 >
                   Register
-                </a>
+                </div>
               </div>
             </form>
             {user && <Navigate to="/config" />}

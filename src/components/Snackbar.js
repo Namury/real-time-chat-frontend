@@ -13,6 +13,11 @@ const Snackbar = forwardRef((props, ref) => {
       color: 'bg-red-600',
       message: 'Failed!',
       logo: <XCircleIcon className="w-8 h-8" />
+    }, 
+    warning: {
+      color: 'bg-yellow-600',
+      message: 'Warning!',
+      logo: ''
     }
   };
 
@@ -36,7 +41,12 @@ const Snackbar = forwardRef((props, ref) => {
     show();
   };
 
-  useImperativeHandle(ref, () => ({ success, error }));
+  const warning = (message) => {
+    setConfig({ ...types.warning, ...{ message } });
+    show();
+  };
+
+  useImperativeHandle(ref, () => ({ success, error, warning }));
 
   return (
     <div className="fixed top-16 left-1/2 -translate-x-1/2">

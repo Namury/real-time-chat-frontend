@@ -1,6 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { UserContext } from "context/UserContext";
+
+import { SnackbarContext } from "context/SnackbarContext";
 import authAPI from "api/authAPI";
 
 var baseUrl = window.location.origin;
@@ -101,12 +103,14 @@ function listDevice(devices) {
 
 export default function Config() {
   const { user, setUser } = useContext(UserContext);
+  const snackbarRef = useContext(SnackbarContext);
   let navigate = useNavigate();
 
   const logout = async () => {
     try {
       const res = authAPI.logout();
       if (res === true) {
+        snackbarRef.current.success("Logout Success!");
         setUser(null);
         navigate("/", { replace: true });
       }

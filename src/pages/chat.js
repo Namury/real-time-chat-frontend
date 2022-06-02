@@ -1,4 +1,13 @@
 import { io } from "socket.io-client";
+import { useContext } from "react";
+import { UserContext } from "context/UserContext";
+import { SnackbarContext } from "context/SnackbarContext";
+import Autolinker from "autolinker";
+
+var autolinker = new Autolinker({
+  newWindow: true,
+  className: "font-bold underline",
+});
 
 var isChannelReady = false;
 var isInitiator = false;
@@ -26,7 +35,6 @@ if (preferedCamera !== null && preferedMicrophone !== null) {
     audio: true,
     video: true,
   };
-  alert("Using Default Devices");
 }
 
 var pcConfig = {
@@ -122,11 +130,13 @@ var remoteVideo;
 var messageInput;
 var sendButton;
 var chatContainer;
+var hostUsername;
 
 function initChat() {
   localVideo = document.querySelector("#localVideo");
   remoteVideo = document.querySelector("#remoteVideo");
   messageInput = document.querySelector("#messageInput");
+  hostUsername = document.querySelector("#messageUsername");
   sendButton = document.querySelector("#sendButton");
   chatContainer = document.querySelector("#chatContainer");
 
@@ -143,13 +153,13 @@ function initChat() {
 
   console.log("Going to find Local media");
   navigator.mediaDevices
-  .getUserMedia(localStreamConstraints)
-  .then(gotStream)
-  .catch(function (e) {
-    console.log(localVideo);
-    alert("getUserMedia() error: " + e.name);
-  });
-};
+    .getUserMedia(localStreamConstraints)
+    .then(gotStream)
+    .catch(function (e) {
+      console.log(localVideo);
+      alert("getUserMedia() error: " + e.name);
+    });
+}
 
 //If found local stream
 function gotStream(stream) {
@@ -288,31 +298,33 @@ function stop() {
 
 //message
 function sendChat() {
-  var content = messageInput.value;
-  if(content !== ""){
-    var username = document.createTextNode("Sender"); //change username
-    var container = document.createElement("div");
-    var chatDiv = document.createElement("div");
-    var pChat = document.createElement("p");
-    var pUsername = document.createElement("p");
-    var txtChat = document.createTextNode(content);
-  
-    chatDiv.setAttribute("class", "rounded-[12px] bg-blue-400 p-2 pr-3 w-fit text-left");
-    container.setAttribute("class", "mx-2 text-left");
-    pUsername.setAttribute("class", "text-sm")
-  
-    pChat.appendChild(txtChat);
-    pUsername.appendChild(username)
-  
+  const content = autolinker.link(messageInput.value);
+  if (content !== "") {
+    const username = document.createTextNode(hostUsername.value); //change username
+    const container = document.createElement("div");
+    const chatDiv = document.createElement("div");
+    const pChat = document.createElement("p");
+    const pUsername = document.createElement("p");
+    // const txtChat = document.createTextNode(content);
+
+    chatDiv.setAttribute("class", "flex justify-end text-left");
+    container.setAttribute("class", "mx-2 text-right");
+    pChat.setAttribute("class", "rounded-[12px] bg-green-400 p-2 w-fit");
+    pUsername.setAttribute("class", "text-sm");
+
+    // pChat.appendChild(content);
+    pChat.innerHTML = content;
+    pUsername.appendChild(username);
+
     chatDiv.appendChild(pChat);
-    
+
     container.appendChild(pUsername);
     container.appendChild(chatDiv);
-    
+
     chatContainer.appendChild(container);
-  
-    sendChannel.send(content);
-  
+
+    sendChannel.send(content + "S3cretArr4yS3parator" + hostUsername.value);
+
     messageInput.value = "";
     messageInput.focus();
   }
@@ -328,26 +340,31 @@ function receiveChannelCallback(event) {
 }
 
 function handleReceiveMessage(event) {
-  var username = document.createTextNode("Reciever"); //change username
-  var container = document.createElement("div");
-  var chatDiv = document.createElement("div");
-  var pChat = document.createElement("p");
-  var pUsername = document.createElement("p");
-  var txtChat = document.createTextNode(event.data);
+  const data = event.data.split("S3cretArr4yS3parator");
+  console.log(data);
+  const username = document.createTextNode(data[1]); //change username
+  const container = document.createElement("div");
+  const chatDiv = document.createElement("div");
+  const pChat = document.createElement("p");
+  const pUsername = document.createElement("p");
+  // const txtChat = document.createTextNode(autolinker.link(data[0]));
 
-  chatDiv.setAttribute("class", "flex justify-end justify-items-end");
-  container.setAttribute("class", "mx-2 text-right");
-  pChat.setAttribute("class", "rounded-[12px] bg-green-400 p-2 pl-3 w-fit")
-  pUsername.setAttribute("class", "text-sm")
+  chatDiv.setAttribute(
+    "class",
+    "rounded-[12px] bg-blue-400 p-2 pr-3 w-fit text-left"
+  );
+  container.setAttribute("class", "mx-2 text-left");
+  pUsername.setAttribute("class", "text-sm");
 
-  pChat.appendChild(txtChat);
-  pUsername.appendChild(username)
+  // pChat.appendChild(autolinker.link(data[0]));
+  pChat.innerHTML = autolinker.link(data[0]);
+  pUsername.appendChild(username);
 
   chatDiv.appendChild(pChat);
-  
+
   container.appendChild(pUsername);
   container.appendChild(chatDiv);
-  
+
   chatContainer.appendChild(container);
 }
 
@@ -357,9 +374,6 @@ function handleReceiveChannelStatusChange(event) {
       "Receive channel's status has changed to " + receiveChannel.readyState
     );
   }
-
-  // Here you would do stuff that needs to be done
-  // when the channel's status changes.
 }
 
 function handleSendChannelStatusChange(event) {
@@ -378,34 +392,53 @@ function handleSendChannelStatusChange(event) {
 }
 
 export default function Chat() {
+  const { user } = useContext(UserContext);
+  const snackbarRef = useContext(SnackbarContext);
+  if (preferedCamera === null && preferedMicrophone === null) {
+    snackbarRef.current.warning("Using Default Devices");
+  }
 
   window.onload = setTimeout(initChat, 1000);
 
   return (
     <div className="">
-      <div className="flex justify-center items-center h-screen bg-gray-400">
-        <div className="flex flex-col h-full px-7 rounded-[12px] bg-white p-4">
-          <div id="chatContainer" className="flex-grow">
+      <div className="flex flex-row h-screen bg-gray-400">
+        <div className="flex flex-col grow-0 max-h-screen px-7 rounded-[12px] bg-white p-4">
+          <div id="chatContainer" className="overflow-auto scroll-auto max-h-full">
             {/* <div className="mx-2 text-right">
               <p className="text-sm">lorem1</p>
-              <div className="flex justify-end justify-items-end">
-                <p className="rounded-[12px] bg-green-400 p-2 pl-5 w-fit">Lorem Ipsum Dolor Sit Amet</p>
+              <div className="flex justify-end text-left">
+                  <p className="rounded-[12px] bg-green-400 p-2 w-fit">awe</p>
               </div>
             </div> */}
           </div>
-          <div className="flex w-full">
+          <div className="flex flex-row py-3">
             <input
               id="messageInput"
               type="textarea"
-              className="form-textarea flex-grow mr-4 border-2"
+              className="pl-2 mr-4 border-2"
               disabled
+            />
+            <input
+              id="messageUsername"
+              value={`${user?.username}`}
+              type="hidden"
             />
             <button
               id="sendButton"
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded flex-initial w-24"
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded py-1 px-4 w-fit"
               disabled
             >
               Send
+            </button>
+          </div>
+          <div>
+            <button
+              id="disconnectButton"
+              className="bg-red-500 hover:bg-red-700 text-white font-bold rounded px-4 w-fit"
+              disabled
+            >
+              Disconnect
             </button>
           </div>
         </div>

@@ -20,7 +20,7 @@ export default function Register() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({ resolver: yupResolver(createUserSchema) });
+  } = useForm({ resolver: yupResolver(createUserSchema), mode: 'onTouched' });
 
   const submitForm = async (data) => {
     try {
@@ -65,14 +65,14 @@ export default function Register() {
                   Submit
                 </button>
               </div>
-              <div className="mt-5 text-grey-dark text-sm">
+              <div className="mt-5 text-grey-dark text-center text-sm flex justify-center">
                 Already have an account?
-                <a
-                  className="text-blue-500 hover:underline cursor-pointer"
+                <div
+                  className="text-blue-500 hover:underline cursor-pointer text-center w-fit"
                   onClick={() => navigate("/")}
                 >
                   Login
-                </a>
+                </div>
               </div>
             </form>
             {user && <Navigate to="/config" />}
