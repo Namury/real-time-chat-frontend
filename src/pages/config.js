@@ -5,103 +5,103 @@ import { UserContext } from "context/UserContext";
 import { SnackbarContext } from "context/SnackbarContext";
 import authAPI from "api/authAPI";
 
-var baseUrl = window.location.origin;
-var cameraSelector;
-var microphoneSelector;
-var changeButton;
-var localVideo;
-var preferedCamera = "";
-var preferedMicrophone = "";
+export default function Config() {
+  var baseUrl = window.location.origin;
+  var cameraSelector;
+  var microphoneSelector;
+  var changeButton;
+  var localVideo;
+  var preferedCamera = "";
+  var preferedMicrophone = "";
 
-localStorage.removeItem("preferedCamera");
-localStorage.removeItem("preferedMicrophone");
+  localStorage.removeItem("preferedCamera");
+  localStorage.removeItem("preferedMicrophone");
 
-function initConfig() {
-  cameraSelector = document.querySelector("#cameraSelector");
-  microphoneSelector = document.querySelector("#micSelector");
-  changeButton = document.querySelector("#changeButton");
-  localVideo = document.querySelector("#localVideo");
-
-  navigator.mediaDevices
-    .enumerateDevices()
-    .then(listDevice)
-    .catch(function (err) {
-      console.log(err.name + ": " + err.message);
-    });
-
-  changeButton.addEventListener("click", (event) => {
-    // if (typeof localVideo !== "undefined") {
-    //   stopMediaTracks(localVideo);
-    // }
-    const videoConstraints = { width: 1280, height: 720 };
-    const audioConstraints = {};
-
-    preferedCamera = cameraSelector.value;
-    preferedMicrophone = microphoneSelector.value;
-
-    videoConstraints.deviceId = { exact: preferedCamera };
-    audioConstraints.deviceId = { exact: preferedMicrophone };
-
-    const constraints = {
-      video: videoConstraints,
-      audio: audioConstraints,
-    };
-
-    localStorage.setItem("preferedCamera", cameraSelector.value);
-    localStorage.setItem("preferedMicrophone", microphoneSelector.value);
+  function initConfig() {
+    cameraSelector = document.querySelector("#cameraSelector");
+    microphoneSelector = document.querySelector("#micSelector");
+    changeButton = document.querySelector("#changeButton");
+    localVideo = document.querySelector("#localVideo");
 
     navigator.mediaDevices
-      .getUserMedia(constraints)
-      .then(gotStream)
-      .catch(function (e) {
-        console.log(localVideo);
-        alert("getUserMedia() error: " + e.name);
+      .enumerateDevices()
+      .then(listDevice)
+      .catch(function (err) {
+        console.log(err.name + ": " + err.message);
       });
-  });
-}
 
-//If found local stream
-function gotStream(stream) {
-  console.log("Adding local stream.");
+    changeButton.addEventListener("click", (event) => {
+      // if (typeof localVideo !== "undefined") {
+      //   stopMediaTracks(localVideo);
+      // }
+      const videoConstraints = { width: 1280, height: 720 };
+      const audioConstraints = {};
 
-  localVideo.srcObject = stream;
-  localVideo.onloadedmetadata = function (e) {
-    localVideo.play();
-  };
-}
+      preferedCamera = cameraSelector.value;
+      preferedMicrophone = microphoneSelector.value;
 
-function listDevice(devices) {
-  // console.log(devices);
-  cameraSelector.innerHTML = "";
-  microphoneSelector.innerHTML = "";
+      videoConstraints.deviceId = { exact: preferedCamera };
+      audioConstraints.deviceId = { exact: preferedMicrophone };
 
-  devices.forEach(function (device) {
-    if (device.kind === "videoinput") {
-      const option = document.createElement("option");
-      // if (device.deviceId === "default") option.selected = true;
-      option.value = device.deviceId;
-      const label = device.label;
-      const textNode = document.createTextNode(label);
-      option.appendChild(textNode);
-      cameraSelector.appendChild(option);
-    }
-    if (
-      device.kind === "audioinput" &&
-      device.deviceId !== "default" &&
-      device.deviceId !== "communications"
-    ) {
-      const option = document.createElement("option");
-      // if (device.deviceId === "default") option.selected = true;
-      option.value = device.deviceId;
-      const label = device.label;
-      const textNode = document.createTextNode(label);
-      option.appendChild(textNode);
-      microphoneSelector.appendChild(option);
-    }
-  });
-}
+      const constraints = {
+        video: videoConstraints,
+        audio: audioConstraints,
+      };
 
-export default function Config() {
+      localStorage.setItem("preferedCamera", cameraSelector.value);
+      localStorage.setItem("preferedMicrophone", microphoneSelector.value);
+
+      navigator.mediaDevices
+        .getUserMedia(constraints)
+        .then(gotStream)
+        .catch(function (e) {
+          console.log(localVideo);
+          alert("getUserMedia() error: " + e.name);
+        });
+    });
+  }
+
+  //If found local stream
+  function gotStream(stream) {
+    console.log("Adding local stream.");
+
+    localVideo.srcObject = stream;
+    localVideo.onloadedmetadata = function (e) {
+      localVideo.play();
+    };
+  }
+
+  function listDevice(devices) {
+    // console.log(devices);
+    cameraSelector.innerHTML = "";
+    microphoneSelector.innerHTML = "";
+
+    devices.forEach(function (device) {
+      if (device.kind === "videoinput") {
+        const option = document.createElement("option");
+        // if (device.deviceId === "default") option.selected = true;
+        option.value = device.deviceId;
+        const label = device.label;
+        const textNode = document.createTextNode(label);
+        option.appendChild(textNode);
+        cameraSelector.appendChild(option);
+      }
+      if (
+        device.kind === "audioinput" &&
+        device.deviceId !== "default" &&
+        device.deviceId !== "communications"
+      ) {
+        const option = document.createElement("option");
+        // if (device.deviceId === "default") option.selected = true;
+        option.value = device.deviceId;
+        const label = device.label;
+        const textNode = document.createTextNode(label);
+        option.appendChild(textNode);
+        microphoneSelector.appendChild(option);
+      }
+    });
+  }
+
   const { user, setUser } = useContext(UserContext);
   const snackbarRef = useContext(SnackbarContext);
   let navigate = useNavigate();

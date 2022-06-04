@@ -1,5 +1,6 @@
 import { io } from "socket.io-client";
 import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { UserContext } from "context/UserContext";
 import { SnackbarContext } from "context/SnackbarContext";
 import Autolinker from "autolinker";
@@ -309,7 +310,7 @@ function sendChat() {
 
     chatDiv.setAttribute("class", "flex justify-end text-left");
     container.setAttribute("class", "mx-2 text-right");
-    pChat.setAttribute("class", "rounded-[12px] bg-green-400 p-2 w-fit");
+    pChat.setAttribute("class", "rounded-[12px] bg-green-400 p-2 w-fit max-w-sm");
     pUsername.setAttribute("class", "text-sm");
 
     // pChat.appendChild(content);
@@ -323,10 +324,13 @@ function sendChat() {
 
     chatContainer.appendChild(container);
 
+    chatContainer.scrollBy(0, 1000)
+    
     sendChannel.send(content + "S3cretArr4yS3parator" + hostUsername.value);
 
     messageInput.value = "";
     messageInput.focus();
+    
   }
 }
 
@@ -341,7 +345,6 @@ function receiveChannelCallback(event) {
 
 function handleReceiveMessage(event) {
   const data = event.data.split("S3cretArr4yS3parator");
-  console.log(data);
   const username = document.createTextNode(data[1]); //change username
   const container = document.createElement("div");
   const chatDiv = document.createElement("div");
@@ -351,7 +354,7 @@ function handleReceiveMessage(event) {
 
   chatDiv.setAttribute(
     "class",
-    "rounded-[12px] bg-blue-400 p-2 pr-3 w-fit text-left"
+    "rounded-[12px] bg-blue-400 p-2 pr-3 w-fit max-w-sm text-left"
   );
   container.setAttribute("class", "mx-2 text-left");
   pUsername.setAttribute("class", "text-sm");
@@ -366,6 +369,8 @@ function handleReceiveMessage(event) {
   container.appendChild(chatDiv);
 
   chatContainer.appendChild(container);
+
+  chatContainer.scrollBy(0, 1000)
 }
 
 function handleReceiveChannelStatusChange(event) {
@@ -373,6 +378,7 @@ function handleReceiveChannelStatusChange(event) {
     console.log(
       "Receive channel's status has changed to " + receiveChannel.readyState
     );
+    console.log(pc)
   }
 }
 
@@ -393,22 +399,35 @@ function handleSendChannelStatusChange(event) {
 
 export default function Chat() {
   const { user } = useContext(UserContext);
+  let navigate = useNavigate();
   const snackbarRef = useContext(SnackbarContext);
   if (preferedCamera === null && preferedMicrophone === null) {
     snackbarRef.current.warning("Using Default Devices");
   }
 
+  const disconnect = () => {
+    try {
+      if(pc !== null){
+        hangup()
+      }
+      snackbarRef.current.success("Disconnect Success!");
+      navigate("/room", { replace: true });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   window.onload = setTimeout(initChat, 1000);
 
   return (
     <div className="">
-      <div className="flex flex-row h-screen bg-gray-400">
-        <div className="flex flex-col grow-0 max-h-screen px-7 rounded-[12px] bg-white p-4">
-          <div id="chatContainer" className="overflow-auto scroll-auto max-h-full">
+      <div className="flex flex-col-reverse lg:flex-row h-screen bg-gray-400">
+        <div className="flex flex-col grow-1 sm:grow-0 max-h-screen max-w-fit px-7 rounded-[12px] bg-white p-4">
+          <div id="chatContainer" className="flex flex-col flex-grow overflow-auto scroll-auto max-h-64 lg:max-h-full max-w-full">
             {/* <div className="mx-2 text-right">
               <p className="text-sm">lorem1</p>
-              <div className="flex justify-end text-left">
-                  <p className="rounded-[12px] bg-green-400 p-2 w-fit">awe</p>
+              <div className="flex grow-0 justify-end text-left">
+                  <p className="grow-0 rounded-[12px] bg-green-400 p-2 max-w-sm">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
               </div>
             </div> */}
           </div>
@@ -436,18 +455,18 @@ export default function Chat() {
             <button
               id="disconnectButton"
               className="bg-red-500 hover:bg-red-700 text-white font-bold rounded px-4 w-fit"
-              disabled
+              onClick={disconnect}
             >
               Disconnect
             </button>
           </div>
         </div>
 
-        <div className="flex flex-col w-full">
+        <div className="flex flex-col w-full overflow-auto">
           <div className="flex align-center justify-center py-5">
             <video
               id="localVideo"
-              className="h-12 sm:h-52 lg:h-96 aspect-video object-cover"
+              className="h-32 sm:h-52 lg:h-96 aspect-video object-cover"
               autoPlay
               muted
               playsInline
