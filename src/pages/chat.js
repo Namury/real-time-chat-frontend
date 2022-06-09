@@ -132,6 +132,8 @@ var messageInput;
 var sendButton;
 var chatContainer;
 var hostUsername;
+var fileContainer;
+var filebutton;
 
 function initChat() {
   localVideo = document.querySelector("#localVideo");
@@ -140,6 +142,8 @@ function initChat() {
   hostUsername = document.querySelector("#messageUsername");
   sendButton = document.querySelector("#sendButton");
   chatContainer = document.querySelector("#chatContainer");
+  fileContainer = document.querySelector("#fileToSend");
+  filebutton = document.querySelector("#sendFileButton");
 
   sendButton.addEventListener("click", sendChat, false);
   messageInput.addEventListener(
@@ -310,7 +314,10 @@ function sendChat() {
 
     chatDiv.setAttribute("class", "flex justify-end text-left");
     container.setAttribute("class", "mx-2 text-right");
-    pChat.setAttribute("class", "rounded-[12px] bg-green-400 p-2 w-fit max-w-sm");
+    pChat.setAttribute(
+      "class",
+      "rounded-[12px] bg-green-400 p-2 w-fit max-w-sm break-words"
+    );
     pUsername.setAttribute("class", "text-sm");
 
     // pChat.appendChild(content);
@@ -324,13 +331,53 @@ function sendChat() {
 
     chatContainer.appendChild(container);
 
-    chatContainer.scrollBy(0, 1000)
-    
-    sendChannel.send(content + "S3cretArr4yS3parator" + hostUsername.value);
+    chatContainer.scrollBy(0, 1000);
+
+    const chatContent = {
+      isChat: true,
+      message: content,
+      username: hostUsername.value,
+    };
+
+    sendChannel.send(JSON.stringify(chatContent));
 
     messageInput.value = "";
     messageInput.focus();
-    
+  }
+}
+
+async function sendFileToDataChannel(file) {
+  try {
+    var reader = new window.FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = onReadAsDataURL;
+    var chunkLength = 64000;
+
+    function onReadAsDataURL(event, text) {
+      var data = {};
+
+      if (event) text = event.target.result; 
+
+      if (text.length > chunkLength) {
+        data.message = text.slice(0, chunkLength);
+      } else {
+        data.message = text;
+        data.fileType = file.type;
+        data.fileName = file.name;
+        data.username = hostUsername.value;
+        data.last = true;
+      }
+
+      sendChannel.send(JSON.stringify(data)); 
+
+      var remainingDataURL = text.slice(data.message.length);
+      if (remainingDataURL.length)
+        setTimeout(function () {
+          onReadAsDataURL(null, remainingDataURL); 
+        }, 500);
+    }
+  } catch (error) {
+    console.log(error);
   }
 }
 
@@ -343,34 +390,77 @@ function receiveChannelCallback(event) {
   receiveChannel.onclose = handleReceiveChannelStatusChange;
 }
 
+var arrayToStoreChunks = [];
 function handleReceiveMessage(event) {
-  const data = event.data.split("S3cretArr4yS3parator");
-  const username = document.createTextNode(data[1]); //change username
-  const container = document.createElement("div");
-  const chatDiv = document.createElement("div");
-  const pChat = document.createElement("p");
-  const pUsername = document.createElement("p");
-  // const txtChat = document.createTextNode(autolinker.link(data[0]));
+  var data = JSON.parse(event.data);
+  console.log(data);
 
-  chatDiv.setAttribute(
-    "class",
-    "rounded-[12px] bg-blue-400 p-2 pr-3 w-fit max-w-sm text-left"
-  );
-  container.setAttribute("class", "mx-2 text-left");
-  pUsername.setAttribute("class", "text-sm");
+  if (!data.isChat) {
+    arrayToStoreChunks.push(data.message); // pushing chunks in array
+    if (data.last) {
+      var fileName = data.fileName;
+      var fileUrl = arrayToStoreChunks.join("");
+      const username = document.createTextNode(data.username);
+      const fileNameNode = document.createTextNode(fileName);
+      const container = document.createElement("div");
+      const chatDiv = document.createElement("div");
+      const aDownload = document.createElement("a");
+      const buttonDownload = document.createElement("button");
+      const pUsername = document.createElement("p");
 
-  // pChat.appendChild(autolinker.link(data[0]));
-  pChat.innerHTML = autolinker.link(data[0]);
-  pUsername.appendChild(username);
+      chatDiv.setAttribute(
+        "class",
+        "rounded-[12px] bg-blue-400 p-2 pr-3 w-fit max-w-sm text-left"
+      );
+      buttonDownload.setAttribute(
+        "class",
+        "bg-blue-500 hover:bg-blue-700 text-white font-bold rounded px-4 w-fit"
+      );
 
-  chatDiv.appendChild(pChat);
+      container.setAttribute("class", "mx-2 text-left");
+      pUsername.setAttribute("class", "text-sm");
 
-  container.appendChild(pUsername);
-  container.appendChild(chatDiv);
+      aDownload.href = fileUrl;
+      aDownload.download = fileName || fileUrl;
 
-  chatContainer.appendChild(container);
+      pUsername.appendChild(username);
+      buttonDownload.appendChild(fileNameNode);
+      aDownload.appendChild(buttonDownload);
+      chatDiv.appendChild(aDownload);
+      container.appendChild(pUsername);
+      container.appendChild(chatDiv);
 
-  chatContainer.scrollBy(0, 1000)
+      chatContainer.appendChild(container);
+
+      arrayToStoreChunks = []; // resetting array
+    }
+  } else {
+    const username = document.createTextNode(data.username); //change username
+    const container = document.createElement("div");
+    const chatDiv = document.createElement("div");
+    const pChat = document.createElement("p");
+    const pUsername = document.createElement("p");
+
+    chatDiv.setAttribute(
+      "class",
+      "rounded-[12px] bg-blue-400 p-2 pr-3 w-fit max-w-sm text-left"
+    );
+    container.setAttribute("class", "mx-2 text-left");
+    pUsername.setAttribute("class", "text-sm");
+    pChat.setAttribute("class", "break-words");
+
+    pChat.innerHTML = autolinker.link(data.message);
+    pUsername.appendChild(username);
+
+    chatDiv.appendChild(pChat);
+
+    container.appendChild(pUsername);
+    container.appendChild(chatDiv);
+
+    chatContainer.appendChild(container);
+
+    chatContainer.scrollBy(0, 1000);
+  }
 }
 
 function handleReceiveChannelStatusChange(event) {
@@ -378,7 +468,7 @@ function handleReceiveChannelStatusChange(event) {
     console.log(
       "Receive channel's status has changed to " + receiveChannel.readyState
     );
-    console.log(pc)
+    console.log(pc);
   }
 }
 
@@ -390,9 +480,27 @@ function handleSendChannelStatusChange(event) {
       messageInput.disabled = false;
       messageInput.focus();
       sendButton.disabled = false;
+      sendButton.setAttribute(
+        "class",
+        "bg-blue-500 hover:bg-blue-700 text-white font-bold rounded px-4 py-1 w-fit"
+      );
+      filebutton.disabled = false;
+      filebutton.setAttribute(
+        "class",
+        "bg-blue-500 hover:bg-blue-700 text-white font-bold rounded px-4 py-1  w-fit"
+      );
     } else {
       messageInput.disabled = true;
       sendButton.disabled = true;
+      sendButton.setAttribute(
+        "class",
+        "bg-blue-400 text-white font-bold rounded px-4 py-1 w-fit"
+      );
+      filebutton.disabled = true;
+      filebutton.setAttribute(
+        "class",
+        "bg-blue-400 text-white font-bold rounded px-4 py-1 w-fit"
+      );
     }
   }
 }
@@ -407,11 +515,20 @@ export default function Chat() {
 
   const disconnect = () => {
     try {
-      if(pc !== null){
-        hangup()
+      if (pc !== null && pc !== undefined) {
+        hangup();
       }
       snackbarRef.current.success("Disconnect Success!");
       navigate("/room", { replace: true });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const sendFile = () => {
+    try {
+      console.log(fileContainer.files[0]);
+      sendFileToDataChannel(fileContainer.files[0]);
     } catch (error) {
       console.log(error);
     }
@@ -422,20 +539,25 @@ export default function Chat() {
   return (
     <div className="">
       <div className="flex flex-col-reverse lg:flex-row h-screen bg-gray-400">
-        <div className="flex flex-col grow-1 sm:grow-0 max-h-screen max-w-fit px-7 rounded-[12px] bg-white p-4">
-          <div id="chatContainer" className="flex flex-col flex-grow overflow-auto scroll-auto max-h-64 lg:max-h-full max-w-full">
+        <div className="flex flex-col grow-1 sm:grow-0 max-h-fit lg:max-h-screen max-w-fit px-7 rounded-[12px] bg-white p-4">
+          <div
+            id="chatContainer"
+            className="flex flex-col flex-grow overflow-y-auto scroll-auto max-h-64 lg:max-h-full max-w-full"
+          >
             {/* <div className="mx-2 text-right">
               <p className="text-sm">lorem1</p>
               <div className="flex grow-0 justify-end text-left">
-                  <p className="grow-0 rounded-[12px] bg-green-400 p-2 max-w-sm">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+                <p className="grow-0 rounded-[12px] bg-green-400 p-2 max-w-sm">
+                  a
+                </p>
               </div>
             </div> */}
           </div>
-          <div className="flex flex-row py-3">
+          <div className="flex flex-initial flex-row py-3">
             <input
               id="messageInput"
               type="textarea"
-              className="pl-2 mr-4 border-2"
+              className="pl-2 mr-4 w-full border-2"
               disabled
             />
             <input
@@ -445,7 +567,7 @@ export default function Chat() {
             />
             <button
               id="sendButton"
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded py-1 px-4 w-fit"
+              className="bg-blue-400 text-white font-bold rounded py-1 px-4 w-fit"
               disabled
             >
               Send
@@ -459,6 +581,14 @@ export default function Chat() {
             >
               Disconnect
             </button>
+            <input type="file" id="fileToSend" name="fileToSend" />
+            <button
+              id="sendFileButton"
+              className="bg-blue-400 text-white font-bold rounded py-1 px-4 w-fit"
+              onClick={sendFile}
+            >
+              Send File
+            </button>
           </div>
         </div>
 
@@ -466,7 +596,7 @@ export default function Chat() {
           <div className="flex align-center justify-center py-5">
             <video
               id="localVideo"
-              className="h-32 sm:h-52 lg:h-96 aspect-video object-cover"
+              className="h-16 sm:h-52 lg:h-96 aspect-video object-cover"
               autoPlay
               muted
               playsInline
@@ -476,7 +606,7 @@ export default function Chat() {
           <div className="flex justify-center py-5">
             <video
               id="remoteVideo"
-              className="h-12 sm:h-52 lg:h-96 aspect-video object-cover"
+              className="h-36 sm:h-52 lg:h-96 aspect-video object-cover"
               autoPlay
               playsInline
               poster="https://thetechnoskeptic.com/wp-content/uploads/2018/05/BlackBoxComposite_iStock_leolintangivanmollov_900.jpg"
