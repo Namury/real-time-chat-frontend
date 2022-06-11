@@ -7,6 +7,7 @@ import { useContext } from "react";
 import { TextInput } from "components";
 import { createRoomSchema } from "validations/roomSchema";
 import { UserContext } from "context/UserContext";
+import { RoomContext } from "context/RoomContext";
 import { SnackbarContext } from "context/SnackbarContext";
 import authAPI from "api/authAPI";
 import axios from "axios";
@@ -27,6 +28,7 @@ export default function Room() {
   }, []);
 
   const { user, setUser } = useContext(UserContext);
+  // const { room, setRoom } = useContext(RoomContext);
   let navigate = useNavigate();
 
   const logout = async () => {
@@ -51,9 +53,9 @@ export default function Room() {
 
   const submitForm = async (data) => {
     try {
-      const res = await authAPI.login(data);
+      const res = await roomAPI.create(data);
       console.log(res.data);
-      setUser(res.data.content);
+      // setRoom(res.data.content);
     } catch (error) {
       snackbarRef.current.error("Login gagal!");
     }

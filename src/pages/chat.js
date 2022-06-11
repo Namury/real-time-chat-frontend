@@ -304,7 +304,7 @@ function stop() {
 //message
 function sendChat() {
   const content = autolinker.link(messageInput.value);
-  if (content !== "") {
+  if (content !== "" && content !== " ") {
     const username = document.createTextNode(hostUsername.value); //change username
     const container = document.createElement("div");
     const chatDiv = document.createElement("div");
@@ -351,12 +351,15 @@ async function sendFileToDataChannel(file) {
     var reader = new window.FileReader();
     reader.readAsDataURL(file);
     reader.onload = onReadAsDataURL;
-    var chunkLength = 64000;
+    var chunkLength = 128000;
+    var fileUrl
 
     function onReadAsDataURL(event, text) {
       var data = {};
-
-      if (event) text = event.target.result; 
+      if (event){
+        text = event.target.result;
+        fileUrl = text
+      } 
 
       if (text.length > chunkLength) {
         data.message = text.slice(0, chunkLength);
@@ -366,15 +369,49 @@ async function sendFileToDataChannel(file) {
         data.fileName = file.name;
         data.username = hostUsername.value;
         data.last = true;
+
+        var fileName = file.name;
+        const username = document.createTextNode(hostUsername.value);
+        const fileNameNode = document.createTextNode(fileName);
+        const container = document.createElement("div");
+        const chatDiv = document.createElement("div");
+        const aDownload = document.createElement("a");
+        const buttonDownload = document.createElement("button");
+        const pUsername = document.createElement("p");
+
+        chatDiv.setAttribute(
+          "class",
+          "rounded-[12px] bg-green-400 p-2 w-fit max-w-sm break-words"
+        );
+        buttonDownload.setAttribute(
+          "class",
+          "bg-blue-500 hover:bg-blue-700 text-white font-bold rounded px-4 w-fit"
+        );
+
+        container.setAttribute("class", "mx-2 text-left");
+        pUsername.setAttribute("class", "text-sm");
+
+        aDownload.href = fileUrl;
+        aDownload.download = fileName || fileUrl;
+
+        pUsername.appendChild(username);
+        buttonDownload.appendChild(fileNameNode);
+        aDownload.appendChild(buttonDownload);
+        chatDiv.appendChild(aDownload);
+        container.appendChild(pUsername);
+        container.appendChild(chatDiv);
+
+        chatContainer.appendChild(container);
       }
 
-      sendChannel.send(JSON.stringify(data)); 
+      sendChannel.send(JSON.stringify(data));
 
       var remainingDataURL = text.slice(data.message.length);
-      if (remainingDataURL.length)
+      if (remainingDataURL.length) {
         setTimeout(function () {
-          onReadAsDataURL(null, remainingDataURL); 
+          onReadAsDataURL(null, remainingDataURL);
         }, 500);
+      }
     }
   } catch (error) {
     console.log(error);
@@ -529,6 +566,7 @@ export default function Chat() {
     try {
       console.log(fileContainer.files[0]);
       sendFileToDataChannel(fileContainer.files[0]);
+      fileContainer.value = "";
     } catch (error) {
       console.log(error);
     }
@@ -600,7 +638,7 @@ export default function Chat() {
               autoPlay
               muted
               playsInline
-              poster="https://thetechnoskeptic.com/wp-content/uploads/2018/05/BlackBoxComposite_iStock_leolintangivanmollov_900.jpg"
+              poster="https://res.cloudinary.com/dqv5d1ji8/image/upload/v1654935255/localVideo_br6lbq.png"
             ></video>
           </div>
           <div className="flex justify-center py-5">
@@ -609,7 +647,7 @@ export default function Chat() {
               className="h-36 sm:h-52 lg:h-96 aspect-video object-cover"
               autoPlay
               playsInline
-              poster="https://thetechnoskeptic.com/wp-content/uploads/2018/05/BlackBoxComposite_iStock_leolintangivanmollov_900.jpg"
+              poster="https://res.cloudinary.com/dqv5d1ji8/image/upload/v1654935255/remoteVideo_rphapu.png"
             ></video>
           </div>
         </div>

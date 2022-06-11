@@ -35,7 +35,7 @@ export default function Login() {
       snackbarRef.current.success("Login Success!");
       setUser(res.data.content);
     } catch (error) {
-      snackbarRef.current.error("Login gagal!");
+      snackbarRef.current.error("Login Failed!");
     }
   };
 

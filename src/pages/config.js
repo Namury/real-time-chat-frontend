@@ -133,10 +133,10 @@ export default function Config() {
             <div className="flex align-center justify-center">
               <video
                 id="localVideo"
-                className="h-12 sm:h-52 lg:h-96 p-7 aspect-video object-cover"
+                className="h-36 sm:h-52 lg:h-96 aspect-video object-cover py-2"
                 autoPlay
                 playsInline
-                poster="https://thetechnoskeptic.com/wp-content/uploads/2018/05/BlackBoxComposite_iStock_leolintangivanmollov_900.jpg"
+                poster="https://res.cloudinary.com/dqv5d1ji8/image/upload/v1654935255/Video_Preview_j0fp0h.png"
               ></video>
             </div>
             <div className="flex align-center justify-center">

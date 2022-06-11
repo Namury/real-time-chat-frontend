@@ -24,11 +24,12 @@ export default function Register() {
 
   const submitForm = async (data) => {
     try {
+      snackbarRef.current.warning("Loading..");
       const res = await authAPI.register(data);
-      console.log(res.data);
+      snackbarRef.current.success("Register Success!");
       setUser(res.data.content);
     } catch (error) {
-      snackbarRef.current.error("Login gagal!");
+      snackbarRef.current.error("Register Failed!");
     }
   };
 

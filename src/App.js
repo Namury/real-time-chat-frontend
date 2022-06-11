@@ -16,7 +16,6 @@ const PageBase = React.lazy(() => import("./pages/pageBase"));
 
 function App() {
   const [user, setUser] = useLocalStorage("user");
-  // const [video, setVideo] = useLocalStorage("video");
   const userProviderValue = useMemo(
     () => ({
       user,
@@ -25,18 +24,10 @@ function App() {
     [user, setUser]
   );
 
-  // const videoProviderValue = useMemo(
-  //   () => ({
-  //     video,
-  //     setVideo,
-  //   }),
-  //   [video, setVideo]
-  // );
   const snackbarRef = useRef(null);
 
   return (
     <UserContext.Provider value={userProviderValue}>
-      {/* <VideoContext.Provider value={videoProviderValue}> */}
         <Snackbar ref={snackbarRef} />
         <Suspense fallback={<div />}>
           <SnackbarContext.Provider value={snackbarRef}>
@@ -62,7 +53,6 @@ function App() {
             </Router>
           </SnackbarContext.Provider>
         </Suspense>
-      {/* </VideoContext.Provider> */}
     </UserContext.Provider>
   );
 }

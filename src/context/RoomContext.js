@@ -2,4 +2,4 @@ import { createContext } from 'react';
 
 const defaultValue = null;
 
-export const VideoContext = createContext(defaultValue);
+export const RoomContext = createContext(defaultValue);
