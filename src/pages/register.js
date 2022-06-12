@@ -69,7 +69,7 @@ export default function Register() {
               <div className="mt-5 text-grey-dark text-center text-sm flex justify-center">
                 Already have an account?
                 <div
-                  className="text-blue-500 hover:underline cursor-pointer text-center w-fit"
+                  className="text-blue-500 hover:underline cursor-pointer text-center w-fit ml-0.5"
                   onClick={() => navigate("/")}
                 >
                   Login

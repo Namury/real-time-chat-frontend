@@ -1,9 +1,10 @@
 import { io } from "socket.io-client";
-import { useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { UserContext } from "context/UserContext";
 import { SnackbarContext } from "context/SnackbarContext";
 import Autolinker from "autolinker";
+import roomAPI from "api/roomAPI";
 
 var autolinker = new Autolinker({
   newWindow: true,
@@ -57,7 +58,7 @@ var pcConfig = {
   ],
 };
 
-var socket = io("https://namury-rtc-backend.herokuapp.com/", {
+var socket = io(process.env.REACT_APP_API_BASE_URL, {
   withCredentials: true,
 });
 
@@ -352,14 +353,14 @@ async function sendFileToDataChannel(file) {
     reader.readAsDataURL(file);
     reader.onload = onReadAsDataURL;
     var chunkLength = 128000;
-    var fileUrl
+    var fileUrl;
 
     function onReadAsDataURL(event, text) {
       var data = {};
-      if (event){
+      if (event) {
         text = event.target.result;
-        fileUrl = text
-      } 
+        fileUrl = text;
+      }
 
       if (text.length > chunkLength) {
         data.message = text.slice(0, chunkLength);
@@ -544,8 +545,26 @@ function handleSendChannelStatusChange(event) {
 
 export default function Chat() {
   const { user } = useContext(UserContext);
+  const { roomUuid } = useParams();
+  const [privateRoom, setPrivateRoom] = useState();
   let navigate = useNavigate();
   const snackbarRef = useContext(SnackbarContext);
+
+  useEffect(() => {
+    async function getRoom() {
+      try {
+        if(roomUuid){
+          const response = await roomAPI.getById(roomUuid, user.token);
+          setPrivateRoom(response.data.content);
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    getRoom();
+  }, [roomUuid, snackbarRef, user.token]);
+
+  console.log(privateRoom);
   if (preferedCamera === null && preferedMicrophone === null) {
     snackbarRef.current.warning("Using Default Devices");
   }
@@ -572,12 +591,43 @@ export default function Chat() {
     }
   };
 
+  const copyPrivateRoomId = (roomUuid) => {
+    try {
+      navigator.clipboard.writeText(roomUuid)
+      snackbarRef.current.success("ID Copied!");
+    } catch (error) {
+      console.log(error);
+      snackbarRef.current.error("Copy Failed!");
+    }
+  };
+
   window.onload = setTimeout(initChat, 1000);
 
   return (
     <div className="">
       <div className="flex flex-col-reverse lg:flex-row h-screen bg-gray-400">
         <div className="flex flex-col grow-1 sm:grow-0 max-h-fit lg:max-h-screen max-w-fit px-7 rounded-[12px] bg-white p-4">
+          <div>
+            {privateRoom ? (
+              <div className="flex flex-row space-x-3">
+                <div>
+                <p className="lg:text-2xl md:text-xl text-sm font-semibold text-black">
+                  {privateRoom.name}
+                </p>
+                </div>
+                <button
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded flex-initial w-24 h-full"
+                  onClick={() => copyPrivateRoomId(privateRoom.uuid)}
+                >
+                  Copy ID
+                </button>
+              </div>
+            ) : (
+              <p className="lg:text-2xl md:text-xl text-sm font-semibold text-black">
+                {room}
+              </p>
+            )}
+          </div>
           <div
             id="chatContainer"
             className="flex flex-col flex-grow overflow-y-auto scroll-auto max-h-64 lg:max-h-full max-w-full"

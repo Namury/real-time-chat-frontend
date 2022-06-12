@@ -9,8 +9,6 @@ import { SnackbarContext } from "context/SnackbarContext";
 import { UserContext } from "context/UserContext";
 import { loginSchema } from "validations/authSchema";
 
-var baseUrl = window.location.origin;
-console.log(baseUrl);
 navigator.mediaDevices
   .getUserMedia({ audio: true, video: true })
   .then()
@@ -72,7 +70,7 @@ export default function Login() {
               <div className="mt-5 text-grey-dark text-center text-sm flex justify-center">
                 Don't have an account?
                 <div 
-                  className="text-blue-500 hover:underline cursor-pointer"
+                  className="text-blue-500 hover:underline cursor-pointer ml-0.5"
                   onClick={() => navigate("/register")}
                 >
                   Register

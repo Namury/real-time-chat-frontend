@@ -5,9 +5,8 @@ import roomAPI from "api/roomAPI";
 import { useForm } from "react-hook-form";
 import { useContext } from "react";
 import { TextInput } from "components";
-import { createRoomSchema } from "validations/roomSchema";
+import { createRoomSchema, joinRoomSchema } from "validations/roomSchema";
 import { UserContext } from "context/UserContext";
-import { RoomContext } from "context/RoomContext";
 import { SnackbarContext } from "context/SnackbarContext";
 import authAPI from "api/authAPI";
 import axios from "axios";
@@ -21,7 +20,7 @@ export default function Room() {
 
   useEffect(() => {
     axios
-      .get("https://namury-rtc-backend.herokuapp.com/chat/room/all")
+      .get(process.env.REACT_APP_API_BASE_URL + "/chat/room/all")
       .then((response) => {
         setRoomCount(response.data.content);
       });
@@ -51,21 +50,46 @@ export default function Room() {
     }
   };
 
-  const submitForm = async (data) => {
+  const createdRoom = () => {
     try {
-      const res = await roomAPI.create(data);
-      console.log(res.data);
-      // setRoom(res.data.content);
+      navigate("/room/created", { replace: true });
     } catch (error) {
-      snackbarRef.current.error("Login gagal!");
+      console.log(error);
     }
   };
 
   const {
-    register,
-    handleSubmit,
-    formState: { errors },
+    register: registerCreate,
+    handleSubmit: handleCreateRoom,
+    formState: { errors: errorsCreate },
   } = useForm({ resolver: yupResolver(createRoomSchema) });
+
+  const submitCreateRoom = async (data) => {
+    try {
+      snackbarRef.current.warning("Loading...");
+      const res = await roomAPI.create(data, user.token);
+      snackbarRef.current.success("Create New Room Success!");
+      navigate("/chat/private/" + res.data.content.uuid, { replace: true });
+    } catch (error) {
+      snackbarRef.current.error("Room Name Already Exist!");
+    }
+  };
+
+  const {
+    register: registerJoin,
+    handleSubmit: handleJoinRoom,
+    formState: { errors: errorsJoin },
+  } = useForm({ resolver: yupResolver(joinRoomSchema) });
+
+  const submitJoinRoom = async (data) => {
+    try {
+      snackbarRef.current.warning("Loading...");
+      const res = await roomAPI.getById(data.roomUuid, user.token);
+      navigate("/chat/private/" + res.data.content.uuid, { replace: true });
+    } catch (error) {
+      snackbarRef.current.error("Room Does Not Exist!");
+    }
+  };
 
   return (
     <div>
@@ -87,7 +111,7 @@ export default function Room() {
                   <p>Room 1</p>
                   <p>Capacity {roomCount[0]}/2</p>
                 </div>
-                <a href={baseUrl + "/chat/room1"}>
+                <a href={baseUrl + "/chat/public/room1"}>
                   {roomCount[0] >= 2 && (
                     <button
                       className="bg-blue-300 text-white font-bold rounded flex-initial w-24 h-full"
@@ -109,7 +133,7 @@ export default function Room() {
                   <p>Room 2</p>
                   <p>Capacity {roomCount[1]}/2</p>
                 </div>
-                <a href={baseUrl + "/chat/room2"}>
+                <a href={baseUrl + "/chat/public/room2"}>
                   {roomCount[1] >= 2 && (
                     <button
                       className="bg-blue-300 text-white font-bold rounded flex-initial w-24 h-full"
@@ -131,7 +155,7 @@ export default function Room() {
                   <p>Room 3</p>
                   <p>Capacity {roomCount[2]}/2</p>
                 </div>
-                <a href={baseUrl + "/chat/room3"}>
+                <a href={baseUrl + "/chat/public/room3"}>
                   {roomCount[2] >= 2 && (
                     <button
                       className="bg-blue-300 text-white font-bold rounded flex-initial w-24 h-full"
@@ -153,7 +177,7 @@ export default function Room() {
                   <p>Room 4</p>
                   <p>Capacity {roomCount[3]}/2</p>
                 </div>
-                <a href={baseUrl + "/chat/room4"}>
+                <a href={baseUrl + "/chat/public/room4"}>
                   {roomCount[3] >= 2 && (
                     <button
                       className="bg-blue-300 text-white font-bold rounded flex-initial w-24 h-full"
@@ -175,7 +199,7 @@ export default function Room() {
                   <p>Room 5</p>
                   <p>Capacity {roomCount[4]}/2</p>
                 </div>
-                <a href={baseUrl + "/chat/room5"}>
+                <a href={baseUrl + "/chat/public/room5"}>
                   {roomCount[4] >= 2 && (
                     <button
                       className="bg-blue-300 text-white font-bold rounded flex-initial w-24 h-full"
@@ -197,7 +221,7 @@ export default function Room() {
                   <p>Room 6</p>
                   <p>Capacity {roomCount[5]}/2</p>
                 </div>
-                <a href={baseUrl + "/chat/room6"}>
+                <a href={baseUrl + "/chat/public/room6"}>
                   {roomCount[5] >= 2 && (
                     <button
                       className="bg-blue-300 text-white font-bold rounded flex-initial w-24 h-full"
@@ -219,32 +243,42 @@ export default function Room() {
                 Private Room
               </p>
               <div className="flex w-full mb-4">
-                <form onSubmit={handleSubmit(submitForm)}>
+                <form onSubmit={handleCreateRoom(submitCreateRoom)}>
                   <div className="space-y-4">
                     <TextInput
                       label="Create Room"
                       name="roomName"
-                      error={errors.username?.message}
-                      register={register}
+                      error={errorsCreate.roomName?.message}
+                      register={registerCreate}
                       placeholder="Room Name"
                     />
                   </div>
                   <div className="flex justify-center items-center mt-3">
-                    <button className="h-8 w-[150px] bg-blue-500 text-sm text-white rounded-lg hover:bg-blue-600">
-                      Create
+                    <input
+                      type="submit"
+                      className="h-8 w-[150px] bg-blue-500 text-sm text-white rounded-lg hover:bg-blue-600"
+                      value="Create"
+                    />
+                  </div>
+                  <div className="flex justify-center items-center mt-3">
+                    <button
+                      className="h-8 w-[150px] bg-blue-500 text-sm text-white rounded-lg hover:bg-blue-600"
+                      onClick={createdRoom}
+                    >
+                      Created Room
                     </button>
                   </div>
                 </form>
               </div>
               <p className="text-xl text-black text-center">Or</p>
               <div className="flex w-full mb-4">
-                <form onSubmit={handleSubmit(submitForm)}>
+                <form onSubmit={handleJoinRoom(submitJoinRoom)}>
                   <div className="space-y-4">
                     <TextInput
                       label="Join Room"
-                      name="roomId"
-                      error={errors.username?.message}
-                      register={register}
+                      name="roomUuid"
+                      error={errorsJoin.roomUuid?.message}
+                      register={registerJoin}
                       placeholder="Room Id"
                     />
                   </div>

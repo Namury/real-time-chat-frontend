@@ -1,26 +1,20 @@
 import Api from './api';
 
 const roomAPI = {
-  createUser(data) {
-    return Api.post('/users', data);
+  create(data, token) {
+    return Api.post('/chat/room/create', data, {headers: {'Authorization': 'Bearer ' + token}});
   },
-  getUsers(options) {
-    return Api.get(`/users?limit=${options.limit}&page=${options.page}`);
+  getAll(token) {
+    return Api.get(`/chat/room/user`, {headers: {'Authorization': 'Bearer ' + token}});
   },
-  getUserById(id) {
-    return Api.get(`/users/${id}`);
+  getById(id, token) {
+    return Api.get(`/chat/room/${id}`, {headers: {'Authorization': 'Bearer ' + token}});
   },
-  updateUser(id, data) {
-    return Api.put(`/users/${id}`, data);
+  update(id, data, token) {
+    return Api.put(`/chat/room/edit/${id}`, data, {headers: {'Authorization': 'Bearer ' + token}});
   },
-  deleteUserById(id) {
-    return Api.delete(`/users/${id}`);
-  },
-  getProfile() {
-    return Api.get('/profile');
-  },
-  updateProfile(data) {
-    return Api.put('/profile/edit', data);
+  delete(id, token) {
+    return Api.delete(`/chat/room/delete/${id}`, {headers: {'Authorization': 'Bearer ' + token}});
   }
 };
 
