@@ -43,6 +43,17 @@ var pcConfig = {
   iceServers: [
     { urls: ["stun:stun.l.google.com:19302", "stun:openrelay.metered.ca:80", "stun:ss-turn2.xirsys.com"] },
     {
+      username: "openrelayproject",
+      credential: "openrelayproject",
+      urls: [
+        "turn:openrelay.metered.ca:80",
+        "turn:openrelay.metered.ca:80?transport=tcp",
+        "turns:openrelay.metered.ca:443",
+        "turn:openrelay.metered.ca:443",
+        "turn:openrelay.metered.ca:443?transport=tcp"
+      ],
+    },
+    {
       username:
         "pTIwO_1U1gXJNEA3sD9Tk9kJz-zQdf5dXphIydn11fl2U3Xy2ZsaVoAfHbEWbxCfAAAAAGKoslp1Y2luZ25n",
       credential: "25cdd826-ebfc-11ec-adc6-0242ac140004",
@@ -53,17 +64,6 @@ var pcConfig = {
         "turn:ss-turn2.xirsys.com:3478?transport=tcp",
         "turns:ss-turn2.xirsys.com:443?transport=tcp",
         "turns:ss-turn2.xirsys.com:5349?transport=tcp",
-      ],
-    },
-    {
-      username: "openrelayproject",
-      credential: "openrelayproject",
-      urls: [
-        "turn:openrelay.metered.ca:80",
-        "turn:openrelay.metered.ca:80?transport=tcp",
-        "turns:openrelay.metered.ca:443",
-        "turn:openrelay.metered.ca:443",
-        "turn:openrelay.metered.ca:443?transport=tcp"
       ],
     },
   ],
