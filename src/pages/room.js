@@ -101,7 +101,7 @@ export default function Room() {
             </p>
             <div className="lg:text-xl md:text-base text-sm font-bold">{`${user?.username}`}</div>
           </div>
-          <div className="flex flex-row space-x-5">
+          <div className="flex flex-row space-x-8">
             <div className="">
               <p className="lg:text-2xl md:text-xl text-sm font-semibold text-black text-center">
                 Public Room

@@ -635,18 +635,6 @@ export default function Chat() {
             id="chatContainer"
             className="flex flex-col flex-grow overflow-y-auto scroll-auto max-h-64 lg:max-h-full max-w-full"
           >
-            <div className="mx-2 text-right">
-              <p className="text-sm">lorem1</p>
-              <div className="flex grow-0 justify-end text-left">
-                <p className="grow-0 rounded-[12px] bg-green-400 p-2 max-w-sm">
-                  <a>
-                    <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded px-4 w-fit">
-                      response_chart.json
-                    </button>
-                  </a>
-                </p>
-              </div>
-            </div>
           </div>
           <div className="flex flex-initial flex-row py-3">
             <input

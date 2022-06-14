@@ -137,7 +137,7 @@ export default function CreatedRoom() {
             </p>
             <div className="lg:text-xl md:text-base text-sm font-bold">{`${user?.username}`}</div>
           </div>
-          <div className="flex flex-col-reverse lg:flex-row space-x-5">
+          <div className="flex flex-col-reverse lg:flex-row space-x-8">
             <div className="max-h-64 lg:max-h-96 overflow-y-auto scroll-auto">
               <p className="lg:text-2xl md:text-xl text-sm font-semibold text-black text-center">
                 Created Private Room
