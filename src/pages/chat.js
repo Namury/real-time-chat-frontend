@@ -41,11 +41,11 @@ if (preferedCamera !== null && preferedMicrophone !== null) {
 
 var pcConfig = {
   iceServers: [
-    { urls: ["stun:ss-turn2.xirsys.com"] },
+    { urls: ["stun:stun.l.google.com:19302", "stun:openrelay.metered.ca:80", "stun:ss-turn2.xirsys.com"] },
     {
       username:
-        "7n-SrMtFI6nAUTHFYVVqA2-i8rFedALQXXp5dKM837NyGDVg34SHtACLDWV0wUocAAAAAGIoUiZuYW11cnk=",
-      credential: "8ef08366-9f77-11ec-adb9-0242ac140004",
+        "pTIwO_1U1gXJNEA3sD9Tk9kJz-zQdf5dXphIydn11fl2U3Xy2ZsaVoAfHbEWbxCfAAAAAGKoslp1Y2luZ25n",
+      credential: "25cdd826-ebfc-11ec-adc6-0242ac140004",
       urls: [
         "turn:ss-turn2.xirsys.com:80?transport=udp",
         "turn:ss-turn2.xirsys.com:3478?transport=udp",
@@ -53,6 +53,17 @@ var pcConfig = {
         "turn:ss-turn2.xirsys.com:3478?transport=tcp",
         "turns:ss-turn2.xirsys.com:443?transport=tcp",
         "turns:ss-turn2.xirsys.com:5349?transport=tcp",
+      ],
+    },
+    {
+      username: "openrelayproject",
+      credential: "openrelayproject",
+      urls: [
+        "turn:openrelay.metered.ca:80",
+        "turn:openrelay.metered.ca:80?transport=tcp",
+        "turns:openrelay.metered.ca:443",
+        "turn:openrelay.metered.ca:443",
+        "turn:openrelay.metered.ca:443?transport=tcp"
       ],
     },
   ],
@@ -381,11 +392,11 @@ async function sendFileToDataChannel(file) {
         const pUsername = document.createElement("p");
         const pChat = document.createElement("p");
 
-        pChat.setAttribute("class", "grow-0 rounded-[12px] bg-green-400 p-2 max-w-sm")
-        chatDiv.setAttribute(
+        pChat.setAttribute(
           "class",
-          "flex grow-0 justify-end text-left"
+          "grow-0 rounded-[12px] bg-green-400 p-2 max-w-sm"
         );
+        chatDiv.setAttribute("class", "flex grow-0 justify-end text-left");
         buttonDownload.setAttribute(
           "class",
           "bg-blue-500 hover:bg-blue-700 text-white font-bold rounded px-4 w-fit"
@@ -400,7 +411,7 @@ async function sendFileToDataChannel(file) {
         pUsername.appendChild(username);
         buttonDownload.appendChild(fileNameNode);
         aDownload.appendChild(buttonDownload);
-        pChat.appendChild(buttonDownload)
+        pChat.appendChild(buttonDownload);
         chatDiv.appendChild(pChat);
         container.appendChild(pUsername);
         container.appendChild(chatDiv);
@@ -556,12 +567,12 @@ export default function Chat() {
   useEffect(() => {
     async function getRoom() {
       try {
-        if(roomUuid){
+        if (roomUuid) {
           const response = await roomAPI.getById(roomUuid, user.token);
           setPrivateRoom(response.data.content);
         }
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
     }
     getRoom();
@@ -596,7 +607,7 @@ export default function Chat() {
 
   const copyPrivateRoomId = (roomUuid) => {
     try {
-      navigator.clipboard.writeText(roomUuid)
+      navigator.clipboard.writeText(roomUuid);
       snackbarRef.current.success("ID Copied!");
     } catch (error) {
       console.log(error);
@@ -614,9 +625,9 @@ export default function Chat() {
             {privateRoom ? (
               <div className="flex flex-row space-x-3">
                 <div>
-                <p className="lg:text-2xl md:text-xl text-sm font-semibold text-black">
-                  {privateRoom.name}
-                </p>
+                  <p className="lg:text-2xl md:text-xl text-sm font-semibold text-black">
+                    {privateRoom.name}
+                  </p>
                 </div>
                 <button
                   className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded flex-initial w-24 h-full"
@@ -634,8 +645,7 @@ export default function Chat() {
           <div
             id="chatContainer"
             className="flex flex-col flex-grow overflow-y-auto scroll-auto max-h-64 lg:max-h-full max-w-full"
-          >
-          </div>
+          ></div>
           <div className="flex flex-initial flex-row py-3">
             <input
               id="messageInput"
