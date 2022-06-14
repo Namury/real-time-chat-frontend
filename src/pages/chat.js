@@ -379,17 +379,19 @@ async function sendFileToDataChannel(file) {
         const aDownload = document.createElement("a");
         const buttonDownload = document.createElement("button");
         const pUsername = document.createElement("p");
+        const pChat = document.createElement("p");
 
+        pChat.setAttribute("class", "grow-0 rounded-[12px] bg-green-400 p-2 max-w-sm")
         chatDiv.setAttribute(
           "class",
-          "rounded-[12px] bg-green-400 p-2 w-fit max-w-sm break-words"
+          "flex grow-0 justify-end text-left"
         );
         buttonDownload.setAttribute(
           "class",
           "bg-blue-500 hover:bg-blue-700 text-white font-bold rounded px-4 w-fit"
         );
 
-        container.setAttribute("class", "mx-2 text-left");
+        container.setAttribute("class", "mx-2 text-right");
         pUsername.setAttribute("class", "text-sm");
 
         aDownload.href = fileUrl;
@@ -398,7 +400,8 @@ async function sendFileToDataChannel(file) {
         pUsername.appendChild(username);
         buttonDownload.appendChild(fileNameNode);
         aDownload.appendChild(buttonDownload);
-        chatDiv.appendChild(aDownload);
+        pChat.appendChild(buttonDownload)
+        chatDiv.appendChild(pChat);
         container.appendChild(pUsername);
         container.appendChild(chatDiv);
 
@@ -632,14 +635,18 @@ export default function Chat() {
             id="chatContainer"
             className="flex flex-col flex-grow overflow-y-auto scroll-auto max-h-64 lg:max-h-full max-w-full"
           >
-            {/* <div className="mx-2 text-right">
+            <div className="mx-2 text-right">
               <p className="text-sm">lorem1</p>
               <div className="flex grow-0 justify-end text-left">
                 <p className="grow-0 rounded-[12px] bg-green-400 p-2 max-w-sm">
-                  a
+                  <a>
+                    <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold rounded px-4 w-fit">
+                      response_chart.json
+                    </button>
+                  </a>
                 </p>
               </div>
-            </div> */}
+            </div>
           </div>
           <div className="flex flex-initial flex-row py-3">
             <input
@@ -664,7 +671,7 @@ export default function Chat() {
           <div>
             <button
               id="disconnectButton"
-              className="bg-red-500 hover:bg-red-700 text-white font-bold rounded px-4 w-fit"
+              className="bg-red-500 hover:bg-red-700 text-white font-bold rounded py-1 px-4 mb-2 w-fit"
               onClick={disconnect}
             >
               Disconnect
@@ -672,7 +679,7 @@ export default function Chat() {
             <input type="file" id="fileToSend" name="fileToSend" />
             <button
               id="sendFileButton"
-              className="bg-blue-400 text-white font-bold rounded py-1 px-4 w-fit"
+              className="bg-blue-400 text-white font-bold rounded py-1 px-4 mt-2 w-fit"
               onClick={sendFile}
             >
               Send File
