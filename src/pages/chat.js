@@ -54,19 +54,6 @@ var pcConfig = {
         "turn:openrelay.metered.ca:443?transport=tcp"
       ],
     },
-    {
-      username:
-        "pTIwO_1U1gXJNEA3sD9Tk9kJz-zQdf5dXphIydn11fl2U3Xy2ZsaVoAfHbEWbxCfAAAAAGKoslp1Y2luZ25n",
-      credential: "25cdd826-ebfc-11ec-adc6-0242ac140004",
-      urls: [
-        "turn:ss-turn2.xirsys.com:80?transport=udp",
-        "turn:ss-turn2.xirsys.com:3478?transport=udp",
-        "turn:ss-turn2.xirsys.com:80?transport=tcp",
-        "turn:ss-turn2.xirsys.com:3478?transport=tcp",
-        "turns:ss-turn2.xirsys.com:443?transport=tcp",
-        "turns:ss-turn2.xirsys.com:5349?transport=tcp",
-      ],
-    },
   ],
 };
 
