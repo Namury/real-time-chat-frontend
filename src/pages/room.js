@@ -13,6 +13,15 @@ import axios from "axios";
 // const APIUrl = "https://namury-rtc-backend.herokuapp.com/chat/room";
 var baseUrl = window.location.origin;
 
+navigator.mediaDevices
+  .getUserMedia({ audio: true, video: true })
+  .then(function (stream) {
+    stream.getTracks().forEach((track) => track.stop());
+  })
+  .catch(function (e) {
+    alert("getUserMedia() error: " + e.name);
+  });
+
 export default function Room() {
   const [roomCount, setRoomCount] = useState([0, 0, 0, 0, 0, 0]);
 
@@ -265,7 +274,7 @@ export default function Room() {
                       className="h-8 w-[150px] bg-blue-500 text-sm text-white rounded-lg hover:bg-blue-600"
                       onClick={createdRoom}
                     >
-                      Created Room
+                      List Private Room
                     </button>
                   </div>
                 </form>

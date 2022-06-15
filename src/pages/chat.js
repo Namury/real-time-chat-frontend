@@ -1,11 +1,12 @@
 import { io } from "socket.io-client";
 import { useContext, useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { UserContext } from "context/UserContext";
 import { SnackbarContext } from "context/SnackbarContext";
 import Autolinker from "autolinker";
 import roomAPI from "api/roomAPI";
 
+var baseUrl = window.location.origin;
 var autolinker = new Autolinker({
   newWindow: true,
   className: "font-bold underline",
@@ -87,6 +88,7 @@ socket.on("created", function (room) {
 
 socket.on("full", function (room) {
   console.log("Room " + room + " is full");
+  window.location.replace(baseUrl + "/room");
 });
 
 socket.on("join", function (room) {
@@ -304,7 +306,7 @@ function hangup() {
 function handleRemoteHangup() {
   console.log("Session terminated.");
   stop();
-  isInitiator = false;
+  isInitiator = true;
 }
 
 function stop() {
@@ -561,7 +563,6 @@ export default function Chat() {
   const { user } = useContext(UserContext);
   const { roomUuid } = useParams();
   const [privateRoom, setPrivateRoom] = useState();
-  let navigate = useNavigate();
   const snackbarRef = useContext(SnackbarContext);
 
   useEffect(() => {
@@ -578,7 +579,6 @@ export default function Chat() {
     getRoom();
   }, [roomUuid, snackbarRef, user.token]);
 
-  console.log(privateRoom);
   if (preferedCamera === null && preferedMicrophone === null) {
     snackbarRef.current.warning("Using Default Devices");
   }
@@ -589,7 +589,6 @@ export default function Chat() {
         hangup();
       }
       snackbarRef.current.success("Disconnect Success!");
-      navigate("/room", { replace: true });
     } catch (error) {
       console.log(error);
     }
@@ -667,13 +666,15 @@ export default function Chat() {
             </button>
           </div>
           <div>
-            <button
-              id="disconnectButton"
-              className="bg-red-500 hover:bg-red-700 text-white font-bold rounded py-1 px-4 mb-2 w-fit"
-              onClick={disconnect}
-            >
-              Disconnect
-            </button>
+            <a href={baseUrl + "/room"}>
+              <button
+                id="disconnectButton"
+                className="bg-red-500 hover:bg-red-700 text-white font-bold rounded py-1 px-4 mb-2 w-fit"
+                onClick={disconnect}
+              >
+                Disconnect
+              </button>
+            </a>
             <input type="file" id="fileToSend" name="fileToSend" />
             <button
               id="sendFileButton"

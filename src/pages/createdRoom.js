@@ -10,6 +10,14 @@ import { UserContext } from "context/UserContext";
 import { SnackbarContext } from "context/SnackbarContext";
 import authAPI from "api/authAPI";
 
+navigator.mediaDevices.getUserMedia({ audio: true, video: true })
+  .then(function(stream){
+    stream.getTracks().forEach(track => track.stop())
+  })
+  .catch(function (e) {
+    alert("getUserMedia() error: " + e.name);
+  });
+
 export default function CreatedRoom() {
 
   const snackbarRef = useContext(SnackbarContext);

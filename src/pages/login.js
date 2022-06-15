@@ -9,9 +9,10 @@ import { SnackbarContext } from "context/SnackbarContext";
 import { UserContext } from "context/UserContext";
 import { loginSchema } from "validations/authSchema";
 
-navigator.mediaDevices
-  .getUserMedia({ audio: true, video: true })
-  .then()
+navigator.mediaDevices.getUserMedia({ audio: true, video: true })
+  .then(function(stream){
+    stream.getTracks().forEach(track => track.stop())
+  })
   .catch(function (e) {
     alert("getUserMedia() error: " + e.name);
   });
