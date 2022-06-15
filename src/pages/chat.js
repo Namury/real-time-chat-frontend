@@ -42,7 +42,13 @@ if (preferedCamera !== null && preferedMicrophone !== null) {
 
 var pcConfig = {
   iceServers: [
-    { urls: ["stun:stun.l.google.com:19302", "stun:openrelay.metered.ca:80", "stun:ss-turn2.xirsys.com"] },
+    {
+      urls: [
+        "stun:stun.l.google.com:19302",
+        "stun:openrelay.metered.ca:80",
+        "stun:ss-turn2.xirsys.com",
+      ],
+    },
     {
       username: "openrelayproject",
       credential: "openrelayproject",
@@ -51,7 +57,20 @@ var pcConfig = {
         "turn:openrelay.metered.ca:80?transport=tcp",
         "turns:openrelay.metered.ca:443",
         "turn:openrelay.metered.ca:443",
-        "turn:openrelay.metered.ca:443?transport=tcp"
+        "turn:openrelay.metered.ca:443?transport=tcp",
+      ],
+    },
+    {
+      username:
+        "6npd8jwzdm7mT90DvIjp_87cqRNbjcEN_m3-Hb_-GUM3GF9q9ku17iNun9wtQsAMAAAAAGKpT6xsb2NlemF2dQ==",
+      credential: "eb45ff40-ec59-11ec-bba5-0242ac140004",
+      urls: [
+        "turn:ss-turn1.xirsys.com:80?transport=udp",
+        "turn:ss-turn1.xirsys.com:3478?transport=udp",
+        "turn:ss-turn1.xirsys.com:80?transport=tcp",
+        "turn:ss-turn1.xirsys.com:3478?transport=tcp",
+        "turns:ss-turn1.xirsys.com:443?transport=tcp",
+        "turns:ss-turn1.xirsys.com:5349?transport=tcp",
       ],
     },
   ],
