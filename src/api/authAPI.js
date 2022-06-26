@@ -7,6 +7,9 @@ const authAPI = {
   register(data) {
     return Api.post('/user/register', data);
   },
+  verify(token) {
+    return Api.get(`/user/verify`, {headers: {'Authorization': 'Bearer ' + token}});
+  },
   logout() {
     return true;
   }

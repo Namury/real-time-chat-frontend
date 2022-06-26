@@ -372,7 +372,7 @@ async function sendFileToDataChannel(file) {
     reader.readAsDataURL(file);
     reader.onload = onReadAsDataURL;
     var chunkLength = 128000;
-    var fileUrl;
+    var fileUrl = "";
 
     function onReadAsDataURL(event, text) {
       var data = {};
@@ -419,7 +419,7 @@ async function sendFileToDataChannel(file) {
         pUsername.appendChild(username);
         buttonDownload.appendChild(fileNameNode);
         aDownload.appendChild(buttonDownload);
-        pChat.appendChild(buttonDownload);
+        pChat.appendChild(aDownload);
         chatDiv.appendChild(pChat);
         container.appendChild(pUsername);
         container.appendChild(chatDiv);
