@@ -145,7 +145,7 @@ export default function CreatedRoom() {
             </p>
             <div className="lg:text-xl md:text-base text-sm font-bold">{`${user?.username}`}</div>
           </div>
-          <div className="flex flex-col-reverse lg:flex-row space-x-8">
+          <div className="flex flex-col-reverse lg:flex-row">
             <div className="max-h-64 lg:max-h-96 overflow-y-auto scroll-auto">
               <p className="lg:text-2xl md:text-xl text-sm font-semibold text-black text-center">
                 Created Private Room
@@ -182,11 +182,11 @@ export default function CreatedRoom() {
                   </div>
                 ))}
             </div>
-            <div className="">
+            <div className="md:ml-8">
               {/* <p className="text-2xl font-semibold text-black text-center">
                 Private Room
               </p> */}
-              <div className="flex w-full mb-4">
+              <div className="flex w-full mb-4 justify-center">
                 <form onSubmit={handleCreateRoom(submitCreateRoom)}>
                   <div className="space-y-4">
                     <TextInput
@@ -205,7 +205,7 @@ export default function CreatedRoom() {
                 </form>
               </div>
               <p className="text-xl text-black text-center">Or</p>
-              <div className="flex w-full mb-4">
+              <div className="flex w-full mb-4 justify-center">
                 <form onSubmit={handleJoinRoom(submitJoinRoom)}>
                   <div className="space-y-4">
                     <TextInput

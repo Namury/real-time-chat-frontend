@@ -625,7 +625,7 @@ export default function Chat() {
   return (
     <div className="">
       <div className="flex flex-col-reverse lg:flex-row h-screen bg-gray-400">
-        <div className="flex flex-col grow-1 sm:grow-0 max-h-fit lg:max-h-screen max-w-fit px-7 rounded-[12px] bg-white p-4">
+        <div className="flex flex-col grow-1 lg:grow-0 max-h-fit lg:max-h-screen max-w-fit px-7 rounded-[12px] bg-white p-4">
           <div>
             {privateRoom ? (
               <div className="flex flex-row space-x-3">
@@ -696,7 +696,7 @@ export default function Chat() {
           <div className="flex align-center justify-center py-5">
             <video
               id="localVideo"
-              className="h-16 sm:h-52 lg:h-96 aspect-video object-cover"
+              className="h-36 sm:h-52 lg:h-72 2xl:h-96 aspect-video object-cover"
               autoPlay
               muted
               playsInline
@@ -706,7 +706,7 @@ export default function Chat() {
           <div className="flex justify-center py-5">
             <video
               id="remoteVideo"
-              className="h-36 sm:h-52 lg:h-96 aspect-video object-cover"
+              className="h-36 sm:h-52 lg:h-72 2xl:h-96 aspect-video object-cover"
               autoPlay
               playsInline
               poster="https://res.cloudinary.com/dqv5d1ji8/image/upload/v1654935255/remoteVideo_rphapu.png"
