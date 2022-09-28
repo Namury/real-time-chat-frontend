@@ -186,6 +186,37 @@ function initChat() {
     });
 }
 
+const getLatency = (pc) => {
+  setInterval(() => {
+    pc.getStats(null).then((stats) => {
+      let statsOutput = "";
+
+      stats.forEach((report) => {
+        if(report.type !== "codec"){
+          statsOutput +=
+            `<h2>Report: ${report.type}</h2>\n<strong>ID:</strong> ${report.id}<br>\n` +
+            `<strong>Timestamp:</strong> ${report.timestamp}<br>\n`;
+  
+          // Now the statistics for this report; we intentionally drop the ones we
+          // sorted to the top above
+  
+          Object.keys(report).forEach((statName) => {
+            if (
+              statName !== "id" &&
+              statName !== "timestamp" &&
+              statName !== "type"
+            ) {
+              statsOutput += `<strong>${statName}:</strong> ${report[statName]}<br>\n`;
+            }
+          });
+        }
+      });
+
+      document.querySelector("#stats-box").innerHTML = statsOutput;
+    });
+  }, 1000);
+};
+
 //If found local stream
 function gotStream(stream) {
   console.log("Adding local stream.");
@@ -230,6 +261,7 @@ window.onbeforeunload = function () {
 function createPeerConnection() {
   try {
     pc = new RTCPeerConnection(pcConfig);
+    getLatency(pc);
     pc.onicecandidate = handleIceCandidate;
     pc.ondatachannel = receiveChannelCallback;
     pc.onaddstream = handleRemoteStreamAdded;
@@ -712,6 +744,7 @@ export default function Chat() {
               poster="https://res.cloudinary.com/dqv5d1ji8/image/upload/v1654935255/remoteVideo_rphapu.png"
             ></video>
           </div>
+          <div id="stats-box">"awe"</div>
         </div>
       </div>
       <script
