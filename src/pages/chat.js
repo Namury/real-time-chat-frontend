@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { UserContext } from "context/UserContext";
 import { SnackbarContext } from "context/SnackbarContext";
+import ApexCharts from "apexcharts";
 import Autolinker from "autolinker";
 import roomAPI from "api/roomAPI";
 
@@ -164,6 +165,7 @@ function initChat() {
   chatContainer = document.querySelector("#chatContainer");
   fileContainer = document.querySelector("#fileToSend");
   filebutton = document.querySelector("#sendFileButton");
+  initChart();
 
   sendButton.addEventListener("click", sendChat, false);
   messageInput.addEventListener(
@@ -186,33 +188,102 @@ function initChat() {
     });
 }
 
+const initChart = () => {
+  var options = {
+    chart: {
+      id: "latencyChart",
+      height: 350,
+      type: "line",
+      animations: {
+        enabled: false,
+        easing: "linear",
+        dynamicAnimation: {
+          speed: 1000,
+        },
+      },
+      toolbar: {
+        show: false,
+      },
+      zoom: {
+        enabled: false,
+      },
+    },
+    series: [
+      {
+        data: [],
+      },
+    ],
+    stroke: {
+      curve: "smooth",
+    },
+    title: {
+      text: "Latency",
+      align: "left",
+    },
+    markers: {
+      size: 0,
+    },
+    dataLabels: {
+      enabled: false,
+    },
+    xaxis: {
+      type: "category",
+    },
+    legend: {
+      show: false,
+    },
+  };
+
+  var chart = new ApexCharts(document.querySelector("#latency-chart"), options);
+
+  chart.render();
+};
+
+const updateChart = (data) => {
+  ApexCharts.exec("latencyChart", "updateSeries", [
+    {
+      data,
+    },
+  ]);
+};
+
 const getLatency = (pc) => {
+  var dataChart = [];
+  var data;
+  var timeString = "";
+  var seconds = 0;
+  var minutes = 0;
   setInterval(() => {
     pc.getStats(null).then((stats) => {
-      let statsOutput = "";
-
       stats.forEach((report) => {
-        if(report.type !== "codec"){
-          statsOutput +=
-            `<h2>Report: ${report.type}</h2>\n<strong>ID:</strong> ${report.id}<br>\n` +
-            `<strong>Timestamp:</strong> ${report.timestamp}<br>\n`;
-  
-          // Now the statistics for this report; we intentionally drop the ones we
-          // sorted to the top above
-  
+        if (report.type !== "codec") {
           Object.keys(report).forEach((statName) => {
-            if (
-              statName !== "id" &&
-              statName !== "timestamp" &&
-              statName !== "type"
-            ) {
-              statsOutput += `<strong>${statName}:</strong> ${report[statName]}<br>\n`;
+            // statsOutput += `<strong>${statName}:</strong> ${report[statName]}<br>\n`;
+            if (statName === "currentRoundTripTime") {
+              if (dataChart.length >= 20) {
+                dataChart.splice(0, 1);
+              }
+              if (seconds === 60) {
+                seconds = -1;
+                minutes++;
+              }
+              seconds++;
+
+              timeString = String(minutes) + ":" + String(seconds);
+
+              data = {
+                x: timeString,
+                y: report[statName],
+              };
+
+              dataChart.push(data);
+              updateChart(dataChart);
             }
           });
         }
       });
 
-      document.querySelector("#stats-box").innerHTML = statsOutput;
+      // document.querySelector("#stats-box").innerHTML = statsOutput;
     });
   }, 1000);
 };
@@ -744,7 +815,8 @@ export default function Chat() {
               poster="https://res.cloudinary.com/dqv5d1ji8/image/upload/v1654935255/remoteVideo_rphapu.png"
             ></video>
           </div>
-          <div id="stats-box">"awe"</div>
+          <div id="stats-box"></div>
+          <div id="latency-chart"></div>
         </div>
       </div>
       <script
