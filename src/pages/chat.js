@@ -265,7 +265,7 @@ const getLatency = (pc) => {
   var statBox = document.querySelector("#stats-box");
   const arrMin = (arr) => Math.min(...arr);
   const arrMax = (arr) => Math.max(...arr);
-  const arrAvg = (arr) => (arr.reduce((a, b) => a + b, 0) / arr.length).toFixed(5);
+  const arrAvg = (arr) => (arr.reduce((a, b) => a + b, 0) / arr.length).toFixed(2);
 
   setInterval(() => {
     pc.getStats(null).then((stats) => {
@@ -294,7 +294,7 @@ const getLatency = (pc) => {
 
               dataChart.push(data);
               allDataChart.push(Number(report[statName] * 1000));
-              
+
               updateChart(dataChart);
               statBox.innerHTML =
                 "Min : " +
