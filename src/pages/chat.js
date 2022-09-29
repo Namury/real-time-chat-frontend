@@ -210,6 +210,7 @@ const initChart = () => {
     },
     series: [
       {
+        name: "Latency",
         data: [],
       },
     ],
@@ -217,7 +218,7 @@ const initChart = () => {
       curve: "smooth",
     },
     title: {
-      text: "Latency",
+      text: "Latency (ms)",
       align: "left",
     },
     markers: {
@@ -228,6 +229,13 @@ const initChart = () => {
     },
     xaxis: {
       type: "category",
+    },
+    yaxis: {
+      show: true,
+      showAlways: true,
+      showForNullSeries: true,
+      seriesName: "Latency in Miliseconds",
+      decimalsInFloat: 0,
     },
     legend: {
       show: false,
@@ -249,10 +257,16 @@ const updateChart = (data) => {
 
 const getLatency = (pc) => {
   var dataChart = [];
+  var allDataChart = [];
   var data;
   var timeString = "";
   var seconds = 0;
   var minutes = 0;
+  var statBox = document.querySelector("#stats-box");
+  const arrMin = (arr) => Math.min(...arr);
+  const arrMax = (arr) => Math.max(...arr);
+  const arrAvg = (arr) => (arr.reduce((a, b) => a + b, 0) / arr.length).toFixed(5);
+
   setInterval(() => {
     pc.getStats(null).then((stats) => {
       stats.forEach((report) => {
@@ -263,21 +277,34 @@ const getLatency = (pc) => {
               if (dataChart.length >= 20) {
                 dataChart.splice(0, 1);
               }
+
               if (seconds === 60) {
                 seconds = -1;
                 minutes++;
               }
+
               seconds++;
 
               timeString = String(minutes) + ":" + String(seconds);
 
               data = {
                 x: timeString,
-                y: report[statName],
+                y: Number(report[statName] * 1000),
               };
 
               dataChart.push(data);
+              allDataChart.push(Number(report[statName] * 1000));
+              
               updateChart(dataChart);
+              statBox.innerHTML =
+                "Min : " +
+                arrMin(allDataChart) +
+                "ms; Max : " +
+                arrMax(allDataChart) +
+                "ms; Average : " +
+                arrAvg(allDataChart) +
+                "ms; Time : " +
+                timeString;
             }
           });
         }
@@ -815,7 +842,7 @@ export default function Chat() {
               poster="https://res.cloudinary.com/dqv5d1ji8/image/upload/v1654935255/remoteVideo_rphapu.png"
             ></video>
           </div>
-          <div id="stats-box"></div>
+          <div id="stats-box">Min: 0ms; Max: 0ms; Average: 0ms</div>
           <div id="latency-chart"></div>
         </div>
       </div>
