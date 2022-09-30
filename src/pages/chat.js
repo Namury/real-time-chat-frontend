@@ -273,7 +273,7 @@ const getLatency = (pc) => {
         if (report.type !== "codec") {
           Object.keys(report).forEach((statName) => {
             // statsOutput += `<strong>${statName}:</strong> ${report[statName]}<br>\n`;
-            if (statName === "currentRoundTripTime") {
+            if (statName === "roundTripTime") {
               if (dataChart.length >= 20) {
                 dataChart.splice(0, 1);
               }
