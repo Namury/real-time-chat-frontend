@@ -210,10 +210,6 @@ const initChart = () => {
     },
     series: [
       {
-        name: "CRTT",
-        data: [],
-      },
-      {
         name: "RTT",
         data: [],
       },
@@ -251,59 +247,43 @@ const initChart = () => {
   chart.render();
 };
 
-const updateChart = (dataRTT, dataCRTT) => {
+const updateChart = (dataCRTT) => {
   ApexCharts.exec("latencyChart", "updateSeries", [
     {
       data: dataCRTT,
-    },
-    {
-      data: dataRTT,
     },
   ]);
 };
 
 const getLatency = (pc) => {
-  var dataRTTChart = [];
   var dataCRTTChart = [];
-  var allDataRTTChart = [];
   var allDataCRTTChart = [];
-  var valRTT = 0;
   var valCRTT = 0;
-  var dataRTT;
   var dataCRTT;
-  var isRTT = 0;
-  var isCRTT = 0;
+  var avgRTT = 0;
+  var latency;
   var timeString = "";
   var seconds = 0;
   var minutes = 0;
-  var statBoxRTT = document.querySelector("#stats-box-rtt");
   var statBoxCRTT = document.querySelector("#stats-box-crtt");
   const arrMin = (arr) => Math.min(...arr);
   const arrMax = (arr) => Math.max(...arr);
-  const arrAvg = (arr) =>
-    (arr.reduce((a, b) => a + b, 0) / arr.length).toFixed(2);
 
   setInterval(() => {
     pc.getStats(null).then((stats) => {
       stats.forEach((report) => {
         if (report.type !== "codec") {
           Object.keys(report).forEach((statName) => {
-            if (statName === "currentRoundTripTime" && valCRTT === 0) {
+            if (statName === "currentRoundTripTime") {
+              console.log("CRTT", report["currentRoundTripTime"])
+              valCRTT = Number(report["currentRoundTripTime"] * 1000);
+              avgRTT = (
+                (Number(report["totalRoundTripTime"]) /
+                  Number(report["responsesReceived"])) *
+                1000
+              ).toFixed(2);
 
-              valCRTT = Number(report[statName] * 1000);
-              isCRTT = 1;
-            }
-
-            if (statName === "roundTripTime" && valRTT === 0) {
-              valRTT = Number(report[statName] * 1000);
-              isRTT = 1;
-            }
-
-            if (isRTT && isCRTT) {
-              console.log("Update Chart")
-              if (dataRTTChart.length >= 20) {
-                dataRTTChart.splice(0, 1);
-              }
+              latency = (avgRTT / 2).toFixed(2);
 
               if (dataCRTTChart.length >= 20) {
                 dataCRTTChart.splice(0, 1);
@@ -315,53 +295,33 @@ const getLatency = (pc) => {
               }
 
               seconds++;
+              console.log(seconds);
 
               timeString = String(minutes) + ":" + String(seconds);
-
-              dataRTT = {
-                x: timeString,
-                y: valRTT,
-              };
 
               dataCRTT = {
                 x: timeString,
                 y: valCRTT,
               };
 
-              dataRTTChart.push(dataRTT);
               dataCRTTChart.push(dataCRTT);
-              allDataRTTChart.push(valRTT);
               allDataCRTTChart.push(valCRTT);
 
-              updateChart(dataRTTChart, dataCRTTChart);
-              statBoxRTT.innerHTML =
-                "RTT = Min : " +
-                arrMin(allDataRTTChart) +
-                "ms; Max : " +
-                arrMax(allDataRTTChart) +
-                "ms; Average : " +
-                arrAvg(allDataRTTChart) +
-                "ms; Current : " +
-                valRTT +
-                "ms; Time : " +
-                timeString;
+              updateChart(dataCRTTChart);
 
               statBoxCRTT.innerHTML =
-                "CRTT = Min : " +
+                "RTT = Min : " +
                 arrMin(allDataCRTTChart) +
                 "ms; Max : " +
                 arrMax(allDataCRTTChart) +
-                "ms; Average : " +
-                arrAvg(allDataCRTTChart) +
                 "ms; Current: " +
                 valCRTT +
+                "ms; Average : " +
+                avgRTT +
+                "ms; Average One-Way Latency : " +
+                latency +
                 "ms; Time : " +
                 timeString;
-
-              valRTT = 0;
-              isRTT = 0;
-              valCRTT = 0;
-              isCRTT = 0;
             }
           });
         }
@@ -897,7 +857,6 @@ export default function Chat() {
               poster="https://res.cloudinary.com/dqv5d1ji8/image/upload/v1654935255/remoteVideo_rphapu.png"
             ></video>
           </div>
-          <div id="stats-box-rtt">Min: 0ms; Max: 0ms; Average: 0ms</div>
           <div id="stats-box-crtt">Min: 0ms; Max: 0ms; Average: 0ms</div>
           <div id="latency-chart"></div>
         </div>
